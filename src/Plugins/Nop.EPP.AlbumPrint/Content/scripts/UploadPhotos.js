@@ -39,3 +39,45 @@ $(document).ready(function () {
   //  }
   //});
 });
+
+function handleFile() {
+  debugger
+  // console.log("handle file - " + JSON.stringify(event, null, 2));
+  var files = document.getElementById('photoUpload').files;
+  if (!files.length) {
+    return alert('Please choose a file to upload first.');
+  }
+  var f = files[0];
+  var fileName = f.name;
+
+  const s3 = new AWS.S3({
+    correctClockSkew: true,
+    endpoint: 'https://s3.us-east-1.wasabisys.com', //use appropriate endpoint as per region of the bucket
+    accessKeyId: 'HY8Z6VILJOXJRK7YH8B6',
+    secretAccessKey: 'JUzVcLXvWCOIpb41z79b32htZuA20dJXzvvRkZMe',
+    region: 'us-east-1'
+    , logger: console
+  });
+
+  console.log('Loaded');
+  const uploadRequest = new AWS.S3.ManagedUpload({
+    params: { Bucket: 'epp', Key: fileName, Body: f },
+    service: s3
+  });
+
+  uploadRequest.on('httpUploadProgress', function (event) {
+    const progressPercentage = Math.floor(event.loaded * 100 / event.total);
+    console.log('Upload progress ' + progressPercentage);
+  });
+
+  console.log('Configed and sending');
+
+  uploadRequest.send(function (err) {
+    if (err) {
+      console.log('UPLOAD ERROR: ' + JSON.stringify(err, null, 2));
+    } else {
+      console.log('Good upload');
+    }
+  });
+
+}

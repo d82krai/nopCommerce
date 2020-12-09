@@ -26,6 +26,27 @@
                 }
 
 
+                var controlId = $"{NopCatalogDefaults.ProductAttributePrefix}{attribute.Id}";
+                var textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
+
+                <dt id="@($"{NopCatalogDefaults.ProductAttributePrefix}label_{attribute.Id}")">
+                    <label class="text-prompt">
+                        @textPrompt
+                    </label>
+                    @if (attribute.IsRequired)
+                    {
+                        <span class="required">*</span>
+                    }
+                    @if (!string.IsNullOrEmpty(attribute.Description))
+                    {
+                        <div class="attribute-description">
+                            @Html.Raw(attribute.Description)
+                        </div>
+                    }
+                </dt>
+
+
+
                 <div class="tab">
 
                     @foreach (var cat11 in prodCats)
@@ -81,158 +102,90 @@
 
 
                     <div id="tab_@(cat11.Id)" class="tabcontent">
-                        @{
-                            var controlId = $"{NopCatalogDefaults.ProductAttributePrefix}{attribute.Id}";
-                            var textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
-                        }
 
-                        <dt id="@($"{NopCatalogDefaults.ProductAttributePrefix}label_{attribute.Id}")">
-                            <label class="text-prompt">
-                                @textPrompt
-                            </label>
-                            @if (attribute.IsRequired)
-                            {
-                                <span class="required">*</span>
-                            }
-                            @if (!string.IsNullOrEmpty(attribute.Description))
-                            {
-                                <div class="attribute-description">
-                                    @Html.Raw(attribute.Description)
-                                </div>
-                            }
-                        </dt>
-
-
-                        @foreach (var attributeValue in productAttributes)
+                        @if (cat11.Name == "Album Sheets")
                         {
-                            var attributeName = string.IsNullOrEmpty(attributeValue.PriceAdjustment) ?
-                                                       attributeValue.Name :
-                                                       T("Products.ProductAttributes.PriceAdjustment", attributeValue.Name, attributeValue.PriceAdjustment,
-                                                           attributeValue.CustomerEntersQty ? T("Products.ProductAttributes.PriceAdjustment.PerItem").Text : string.Empty).Text;
-
-
-                            <dd id="@($"{NopCatalogDefaults.ProductAttributePrefix}input_{attribute.Id}")">
-                                @switch (attribute.AttributeControlType)
-                                {
-                                    case AttributeControlType.Checkboxes:
-                                    case AttributeControlType.ReadonlyCheckboxes:
-                                        {
-                                            <ul class="option-list">
-                                                @*@foreach (var attributeValue in productAttributes)
-                                                    {*@
-                                                <li>
-                                                    <input id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null)
-                                                           @(attributeValue.CustomerEntersQty ? Html.Raw($"onchange=\"showHideCheckboxQuantity('{controlId}_{attributeValue.Id}')\"") : null) />
-                                                    <label for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
-
-                                                    @if (attributeValue.CustomerEntersQty)
-                                                    {
-                                                        <div class="qty-box" id="@(controlId)_@(attributeValue.Id)_qty_box" style="display:none">
-                                                            <label for="@(controlId)_@(attributeValue.Id)_qty">@(T("Products.ProductAttributes.PriceAdjustment.Quantity").Text)</label>
-                                                            <input type="text" name="@(controlId)_@(attributeValue.Id)_qty" id="@(controlId)_@(attributeValue.Id)_qty" value="@(attributeValue.Quantity)" />
-                                                            <script asp-location="Footer">
-                                                        $(document).ready(function() {
-                                                            showHideCheckboxQuantity('@(controlId)_@(attributeValue.Id)');
-                                                        })
-                                                            </script>
-                                                        </div>
-                                                    }
-                                                </li>
-                                                @*}*@
-                                            </ul>
-                                        }
-                                        break;
-                                }
-
-
-
-                            </dd>
-
-
+                            <input id="photoUpload" type="file" onchange="handleFile()" multiple />
                         }
-
-
-                    </div>
-
-
-
-
-                }
-
-
-                @foreach (var cat11 in prodCats)
-                {
-                    <div id="tab_@(cat11.Id)" class="tabcontent">
-                        <p>@cat11.Name</p>
-
-
-                        @{
-                            var controlId = $"{NopCatalogDefaults.ProductAttributePrefix}{attribute.Id}";
-                            var textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
-                        }
-                        <dt id="@($"{NopCatalogDefaults.ProductAttributePrefix}label_{attribute.Id}")">
-                            <label class="text-prompt">
-                                @textPrompt
-                            </label>
-                            @if (attribute.IsRequired)
+                        else
+                        {
+                            foreach (var attributeValue in productAttributes)
                             {
-                                <span class="required">*</span>
-                            }
-                            @if (!string.IsNullOrEmpty(attribute.Description))
-                            {
-                                <div class="attribute-description">
-                                    @Html.Raw(attribute.Description)
-                                </div>
-                            }
-                        </dt>
-                        <dd id="@($"{NopCatalogDefaults.ProductAttributePrefix}input_{attribute.Id}")">
-                            @switch (attribute.AttributeControlType)
-                            {
-                                case AttributeControlType.Checkboxes:
-                                case AttributeControlType.ReadonlyCheckboxes:
+                                var attributeName = string.IsNullOrEmpty(attributeValue.PriceAdjustment) ?
+                                                           attributeValue.Name :
+                                                           T("Products.ProductAttributes.PriceAdjustment", attributeValue.Name, attributeValue.PriceAdjustment,
+                                                               attributeValue.CustomerEntersQty ? T("Products.ProductAttributes.PriceAdjustment.PerItem").Text : string.Empty).Text;
+
+
+                                <dd id="@($"{NopCatalogDefaults.ProductAttributePrefix}input_{attribute.Id}")">
+                                    @switch (attribute.AttributeControlType)
                                     {
-                                        <ul class="option-list">
-                                            @foreach (var attributeValue in attribute.Values)
+                                        case AttributeControlType.Checkboxes:
+                                        case AttributeControlType.ReadonlyCheckboxes:
                                             {
-                                                var attributeName = string.IsNullOrEmpty(attributeValue.PriceAdjustment) ?
-                                                    attributeValue.Name :
-                                                    T("Products.ProductAttributes.PriceAdjustment", attributeValue.Name, attributeValue.PriceAdjustment,
-                                                        attributeValue.CustomerEntersQty ? T("Products.ProductAttributes.PriceAdjustment.PerItem").Text : string.Empty).Text;
-                                                <li>
-                                                    <input id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null)
-                                                           @(attributeValue.CustomerEntersQty ? Html.Raw($"onchange=\"showHideCheckboxQuantity('{controlId}_{attributeValue.Id}')\"") : null) />
-                                                    <label for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
+                                                <ul class="option-list">
+                                                    @*@foreach (var attributeValue in productAttributes)
+                                                        {*@
+                                                    <li>
+                                                        <input id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null)
+                                                               @(attributeValue.CustomerEntersQty ? Html.Raw($"onchange=\"showHideCheckboxQuantity('{controlId}_{attributeValue.Id}')\"") : null) />
+                                                        <label for="@(controlId)_@(attributeValue.Id)">
 
-                                                    @if (attributeValue.CustomerEntersQty)
-                                                    {
-                                                        <div class="qty-box" id="@(controlId)_@(attributeValue.Id)_qty_box" style="display:none">
-                                                            <label for="@(controlId)_@(attributeValue.Id)_qty">@(T("Products.ProductAttributes.PriceAdjustment.Quantity").Text)</label>
-                                                            <input type="text" name="@(controlId)_@(attributeValue.Id)_qty" id="@(controlId)_@(attributeValue.Id)_qty" value="@(attributeValue.Quantity)" />
-                                                            <script asp-location="Footer">
+                                                            @{
+                                                                var prodViewModel = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProductModel").FirstOrDefault().Value as Nop.Web.Models.Catalog.ProductDetailsModel;
+                                                                var img = prodViewModel.PictureModels.FirstOrDefault();
+                                                                var thumbImageUrl = img?.ThumbImageUrl;
+
+                                                                var prodUrl = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProductUrl").FirstOrDefault().Value as string;
+
+                                                            }
+
+                                                            <a href="@prodUrl" target="_blank">
+                                                                <img src="@thumbImageUrl" style="width:120px;" />
+                                                            </a>
+
+                                                            @attributeName
+                                                        </label>
+
+                                                        @if (attributeValue.CustomerEntersQty)
+                                                        {
+                                                            <div class="qty-box" id="@(controlId)_@(attributeValue.Id)_qty_box" style="display:none">
+                                                                <label for="@(controlId)_@(attributeValue.Id)_qty">@(T("Products.ProductAttributes.PriceAdjustment.Quantity").Text)</label>
+                                                                <input type="text" name="@(controlId)_@(attributeValue.Id)_qty" id="@(controlId)_@(attributeValue.Id)_qty" value="@(attributeValue.Quantity)" />
+                                                                <script asp-location="Footer">
                                                         $(document).ready(function() {
                                                             showHideCheckboxQuantity('@(controlId)_@(attributeValue.Id)');
                                                         })
-                                                            </script>
-                                                        </div>
-                                                    }
-                                                </li>
+                                                                </script>
+                                                            </div>
+                                                        }
+                                                    </li>
+                                                    @*}*@
+                                                </ul>
                                             }
-                                        </ul>
+                                            break;
                                     }
-                                    break;
+
+
+
+                                </dd>
+
+
                             }
-
-
-
-                        </dd>
-
+                        }
 
 
 
 
                     </div>
 
+
+
+
                 }
+
+
+
             }
         </dl>
         <script asp-location="Footer">
@@ -257,6 +210,7 @@
                     $('#' + id + '_qty_box').hide();
             };
         </script>
+
     </div>
 
     //dynamic update support

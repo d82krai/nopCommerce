@@ -47,6 +47,7 @@ namespace Nop.EPP.AlbumPrint.Controllers
         private readonly IProductModelFactory _productModelFactory;
         private readonly IProductAttributeService _productAttributeService;
         private readonly ICategoryService _categoryService;
+        private readonly IWebHelper _webHelper;
 
         #endregion
 
@@ -68,7 +69,8 @@ namespace Nop.EPP.AlbumPrint.Controllers
             ILocalizationService localizationService,
             IProductModelFactory productModelFactory,
             IProductAttributeService productAttributeService,
-            ICategoryService categoryService
+            ICategoryService categoryService,
+            IWebHelper webHelper
             )
         {
             _productService = productService;
@@ -87,6 +89,7 @@ namespace Nop.EPP.AlbumPrint.Controllers
             _productModelFactory = productModelFactory;
             _productAttributeService = productAttributeService;
             _categoryService = categoryService;
+            _webHelper = webHelper;
         }
 
         #endregion
@@ -179,6 +182,12 @@ namespace Nop.EPP.AlbumPrint.Controllers
                                 attrVal.CustomProperties.Add("DisplayOrder", attrValFromDb.DisplayOrder);
                                 attrVal.CustomProperties.Add("AssociatedProduct", associatedProduct);
 
+                                var attrProdModel = _productModelFactory.PrepareProductDetailsModel(associatedProduct, updatecartitem, false);
+                                attrVal.CustomProperties.Add("AssociatedProductModel", attrProdModel);
+
+                                var attrProductUrl = Url.RouteUrl("Product", new { SeName = _urlRecordService.GetSeName(associatedProduct) }, _webHelper.CurrentRequestProtocol);
+                                attrVal.CustomProperties.Add("AssociatedProductUrl", attrProductUrl);
+
                                 var productCategories = _categoryService.GetProductCategoriesByProductId(associatedProduct.Id);
                                 foreach (var cat in productCategories)
                                 {
@@ -206,5 +215,11 @@ namespace Nop.EPP.AlbumPrint.Controllers
         }
 
         #endregion
+    }
+
+    public class ProductVm
+    {
+        public string ProductPhoto { get; set; }
+        public string ProductUrl { get; set; }
     }
 }

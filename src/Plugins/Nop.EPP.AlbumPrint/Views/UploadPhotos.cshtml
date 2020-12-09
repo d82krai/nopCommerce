@@ -17,6 +17,8 @@
     Html.AddScriptParts(ResourceLocation.Footer, "~/Plugins/EPP.AlbumPrint/Content/scripts/UploadPhotos.js");
     Html.AddCssFileParts("~/Plugins/EPP.AlbumPrint/Content/css/UploadPhotos.css");
 
+    Html.AddScriptParts(ResourceLocation.Footer, "//sdk.amazonaws.com/js/aws-sdk-2.619.0.min.js");
+
     //title
     Html.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
     //meta
