@@ -105,7 +105,8 @@
 
                         @if (cat11.Name == "Album Sheets")
                         {
-                            <input id="photoUpload" type="file" onchange="handleFile()" multiple />
+                            <input id="photoUpload" type="file" name="photoUpload" multiple />
+                            <input type="hidden" id="photoUploadId" name="photoUploadId" />
                         }
                         else
                         {

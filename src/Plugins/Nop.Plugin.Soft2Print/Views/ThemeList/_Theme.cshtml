@@ -1,0 +1,30 @@
+﻿@model ViewModel.Theme
+
+
+<div class="item-box">
+    <div class="product-item theme-item">
+        @await Component.InvokeAsync("Widget", new { widgetZone = "theme_preview_before", additionalData = Model.Id })
+        @if (!string.IsNullOrEmpty(Model.PreviewUrl))
+        {
+            <div class="picture">
+                <a href="#" onclick="soft2print.openModule.actions.open('@Model.Url', '#product-details-form'); return false">
+                    <img src="@Model.PreviewUrl" />
+                </a>
+            </div>
+        }
+        @await Component.InvokeAsync("Widget", new { widgetZone = "theme_preview_after", additionalData = Model.Id })
+        <div class="details">
+            <h2 class="product-title project-title">
+                <a href="#" onclick="soft2print.openModule.actions.open('@Model.Url', '#product-details-form'); return false">@Model.Name</a>
+            </h2>
+
+            <div class="add-info">
+                @await Component.InvokeAsync("Widget", new { widgetZone = "theme_buttons_before", additionalData = Model.Id })
+                <div class="buttons">
+                    <input type="button" value="@T(ResourceCollection.Key.OpenModuleButton.Text)" title="@T(ResourceCollection.Key.OpenModuleButton.Text)" class="button-2 product-box-add-to-cart-button project-open" onclick="soft2print.openModule.actions.open('@Model.Url', '#product-details-form');  return false" />
+                </div>
+                @await Component.InvokeAsync("Widget", new { widgetZone = "theme_buttons_after", additionalData = Model.Id })
+            </div>
+        </div>
+    </div>
+</div>

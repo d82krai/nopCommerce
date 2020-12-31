@@ -26,6 +26,8 @@ $(document).ready(function () {
 
   $("#dZUpload").dropzone({ url: "/file/post" });
 
+  $('#photoUploadId').val(makeid(15));
+
   //$("#dZUpload").dropzone({
   //  url: "/hn_SimpeFileUploader.ashx",
   //  addRemoveLinks: true,
@@ -40,8 +42,10 @@ $(document).ready(function () {
   //});
 });
 
-function handleFile() {
+function uploadFiles() {
   debugger
+  var rootFolderName = 'AlbumPrints';
+  var randomFolderName = $('#photoUploadId').val();//makeid(10);
   // console.log("handle file - " + JSON.stringify(event, null, 2));
   var files = document.getElementById('photoUpload').files;
   if (!files.length) {
@@ -49,6 +53,8 @@ function handleFile() {
   }
   var f = files[0];
   var fileName = f.name;
+
+  var completeFilePath = rootFolderName + '/' + randomFolderName + '/' + fileName;
 
   const s3 = new AWS.S3({
     correctClockSkew: true,
@@ -60,24 +66,63 @@ function handleFile() {
   });
 
   console.log('Loaded');
-  const uploadRequest = new AWS.S3.ManagedUpload({
-    params: { Bucket: 'epp', Key: fileName, Body: f },
-    service: s3
+
+  for (var i = 0; i < files.length; i++) {
+    //alert(files[i].name);
+
+    completeFilePath = rootFolderName + '/' + randomFolderName + '/' + files[i].name;
+    f = files[i];
+
+    const uploadRequest = new AWS.S3.ManagedUpload({
+      params: { Bucket: 'epp', Key: completeFilePath, Body: f },
+      service: s3
+    });
+
+    uploadRequest.on('httpUploadProgress', function (event) {
+      const progressPercentage = Math.floor(event.loaded * 100 / event.total);
+      console.log('Upload progress ' + progressPercentage);
+    });
+
+    console.log('Configed and sending');
+
+    uploadRequest.send(function (err) {
+      if (err) {
+        console.log('UPLOAD ERROR: ' + JSON.stringify(err, null, 2));
+      } else {
+        console.log('Good upload');
+      }
+    });
+
+  }
+
+}
+
+function addalbumproducttocart_details(urladd, formselector) {
+  debugger
+  if (AjaxCart.loadWaiting !== false) {
+    return;
+  }
+  AjaxCart.setLoadWaiting(true);
+
+  uploadFiles();
+
+  $.ajax({
+    cache: false,
+    url: urladd,
+    data: $(formselector).serialize(),
+    type: "POST",
+    success: AjaxCart.success_process,
+    complete: AjaxCart.resetLoadWaiting,
+    error: AjaxCart.ajaxFailure
   });
+}
 
-  uploadRequest.on('httpUploadProgress', function (event) {
-    const progressPercentage = Math.floor(event.loaded * 100 / event.total);
-    console.log('Upload progress ' + progressPercentage);
-  });
-
-  console.log('Configed and sending');
-
-  uploadRequest.send(function (err) {
-    if (err) {
-      console.log('UPLOAD ERROR: ' + JSON.stringify(err, null, 2));
-    } else {
-      console.log('Good upload');
-    }
-  });
-
+function makeid(length) {
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }

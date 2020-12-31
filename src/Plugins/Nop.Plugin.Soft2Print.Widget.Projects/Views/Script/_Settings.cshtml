@@ -1,0 +1,15 @@
+﻿<script>
+   var soft2print = soft2print || {};
+    soft2print.project = soft2print.project || {};
+    soft2print.project.settings = function () {
+        @{
+            string projectIDPrefix = "__ProjectID__";
+        }
+        return {
+            projectIDPrefix: "@projectIDPrefix",
+            openProjectUrl:  '@Url.RouteUrl(RouteProvider.OpenProject, new { id = projectIDPrefix })',
+            copyProjectUrl: '@Url.RouteUrl(RouteProvider.CopyProject, new { id = projectIDPrefix })',
+            deleteProjectUrl: '@Url.RouteUrl(RouteProvider.DeleteProject, new { id = projectIDPrefix })'
+        };
+    }()
+</script>

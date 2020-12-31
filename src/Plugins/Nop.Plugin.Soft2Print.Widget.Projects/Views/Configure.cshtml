@@ -1,0 +1,253 @@
+﻿@{
+    Layout = "_ConfigurePlugin";
+}
+
+@model ViewModel.Configure
+@inject Nop.Core.IWebHelper webHelper
+
+<form asp-controller="Soft2Print_Widget_Projects_Admin" asp-action="Configure" method="post">
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Raw($"All translation related to this plugin (except for the help) can be translated. <br />You can do this by going to \"{T("Admin.Configuration").Text} >> {T("Admin.Configuration.Languages").Text} >> {T("Admin.Common.Edit").Text} > {T("Admin.Configuration.Languages.Resources").Text} \"<br /> Here you enter 'soft2print' in the {T("Admin.Configuration.Languages.Resources.Searchresourcename").Text}.<br /><br />Click the link below to generate an xml that contains all the missing '{T("Admin.Configuration.Languages.Resources").Text}', that is ready to import but in english.")
+                <br /><br />
+                <a target="_blank" href="@Url.RouteUrl(Nop.Plugin.Soft2Print.Widget.Projects.RouteProvider.TranslationXML)">Click Here</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Raw(T(ResourceCollection.Key.Admin.General.Action.Header).Text)
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Action_ShowCopy" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Action_ShowCopy" />
+                        <span asp-validation-for="General_Action_ShowCopy"></span>
+                    </div>
+                </div>
+                @*<div class="form-group">
+                        <div class="col-md-3">
+                            <nop-label asp-for="General_Action_ShowRename" />
+                        </div>
+                        <div class="col-md-9">
+                            <nop-editor asp-for="General_Action_ShowRename" />
+                            <span asp-validation-for="General_Action_ShowRename"></span>
+                        </div>
+                    </div>*@
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Action_ShowDelete" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Action_ShowDelete" />
+                        <span asp-validation-for="General_Action_ShowDelete"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Raw(T(ResourceCollection.Key.Admin.General.Details.Header).Text)
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_DefaultProjectName" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_DefaultProjectName" />
+                        <span asp-validation-for="General_Details_DefaultProjectName"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_ShowPreview" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_ShowPreview" />
+                        <span asp-validation-for="General_Details_ShowPreview"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_ShowCreated" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_ShowCreated" />
+                        <span asp-validation-for="General_Details_ShowCreated"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_ShowLastChanged" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_ShowLastChanged" />
+                        <span asp-validation-for="General_Details_ShowLastChanged"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_ShowProduct" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_ShowProduct" />
+                        <span asp-validation-for="General_Details_ShowProduct"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_ShowInheritedBy" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_ShowInheritedBy" />
+                        <span asp-validation-for="General_Details_ShowInheritedBy"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_ShowTheme" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_ShowTheme" />
+                        <span asp-validation-for="General_Details_ShowTheme"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="General_Details_GetWarningIfS2PThemeIsShown" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="General_Details_GetWarningIfS2PThemeIsShown" />
+                        <span asp-validation-for="General_Details_GetWarningIfS2PThemeIsShown"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Raw(T(ResourceCollection.Key.Admin.ProductDetails.Header).Text)
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="ProductDetails_Show" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="ProductDetails_Show" />
+                        <span asp-validation-for="ProductDetails_Show"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="ProductDetails_HideIfGuest" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="ProductDetails_HideIfGuest" />
+                        <span asp-validation-for="ProductDetails_HideIfGuest"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="ProductDetails_ViewModeValues" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="ProductDetails_ViewMode" asp-items="Model.ProductDetails_ViewModeValues" />
+                        <span asp-validation-for="ProductDetails_ViewMode"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="ProductDetails_WidgetZone" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="ProductDetails_WidgetZone" />
+                        <span asp-validation-for="ProductDetails_WidgetZone"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Raw(T(ResourceCollection.Key.Admin.HeaderLink.Header).Text)
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="HeaderLink_Show" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="HeaderLink_Show" />
+                        <span asp-validation-for="HeaderLink_Show"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="HeaderLink_HideIfGuest" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="HeaderLink_HideIfGuest" />
+                        <span asp-validation-for="HeaderLink_HideIfGuest"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="HeaderLink_WidgetZone" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="HeaderLink_WidgetZone" />
+                        <span asp-validation-for="HeaderLink_WidgetZone"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Raw(T(ResourceCollection.Key.Admin.AccountLink.Header).Text)
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AccountLink_Show" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AccountLink_Show" />
+                        <span asp-validation-for="AccountLink_Show"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AccountLink_WidgetZone" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AccountLink_WidgetZone" />
+                        <span asp-validation-for="AccountLink_WidgetZone"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-9 col-md-offset-3">
+                        <input type="submit" name="save" class="btn bg-primary" value="@T("Admin.Common.Save")" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,25 @@
+﻿@model ViewModel.ViewModule
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    if (Model.ViewMode == Models.ViewMode.Edit)
+    {
+        Html.AddTitleParts(T(ResourceCollection.Key.ViewModule.PageTitel.Edit).ToString());
+    }
+    else if (Model.ViewMode == Models.ViewMode.View)
+    {
+        Html.AddTitleParts(T(ResourceCollection.Key.ViewModule.PageTitel.View).ToString());
+    }
+    //page class
+    Html.AppendPageCssClassParts("html-s2p-page");
+    Html.AppendPageCssClassParts("html-viewmodule-page");
+    Html.AppendCssFileParts(Plugin.Location + "Styles/ViewModule.css");
+    //Html.AppendScriptParts(Plugin.Location + "Script/Default.js");
+}
+
+<div class="page s2p-page viewmodule-page">
+    <div class="viewmodule-container easeinfullscreen">
+        @await Html.PartialAsync(Plugin.Location + "Views/ViewModule/_IFrame.cshtml", Model)
+    </div>
+</div>

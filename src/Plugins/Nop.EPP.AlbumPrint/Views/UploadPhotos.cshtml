@@ -86,9 +86,14 @@
 
                             var dataDictAddToCart = new ViewDataDictionary(ViewData);
                             dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
-                            @await Html.PartialAsync("~/Views/Product/_AddToCart.cshtml", Model.AddToCart, dataDictAddToCart)
+                            @*@await Html.PartialAsync("~/Views/Product/_AddToCart.cshtml", Model.AddToCart, dataDictAddToCart)*@
 
-                            @*@await Html.PartialAsync("~/Views/Product/_ProductEstimateShipping.cshtml", Model.ProductEstimateShipping)*@
+                            <div class="add-to-cart">
+
+                                <input type="button" id="add-to-cart-button-@Model.Id" class="button-1 add-to-cart-button" value="ADD TO CART" data-productid="@Model.Id" onclick="addalbumproducttocart_details('@Url.RouteUrl("AddAlbumProductToCart-Details", new {productId = Model.Id, shoppingCartTypeId = 0 })', '#product-details-form');return false;" />
+
+                            </div>
+
                         }
 
 

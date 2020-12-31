@@ -1,0 +1,210 @@
+﻿@{
+    Layout = "_AdminLayout";
+}
+@model ViewModel.Help
+@{
+    //page title
+    ViewBag.Title = "Soft2Print Help";
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("S2PHelp");
+    //Html.AppendPageCssClassParts("html-admin-s2p-help");
+    Html.AppendCssFileParts(Plugin.Location + "Styles/Admin.css");
+}
+
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        Soft2Print Help
+    </h1>
+</div>
+
+<div class="content html-admin-s2p-help">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Product Setup</h3>
+                    <b>General:</b><br />
+                    To setup a Soft2print product, is almost the same as setting up any other product.<br />
+                    You need to make sure that the product is already setup in the <a href="https://admin.soft2print.com/">soft2print backend.</a><br />
+                    When this is done, you can start here.<br /><br />
+                    Soft2Print product setup requirements:
+                    <ul>
+                        <li>@T("Admin.Catalog.Products.Fields.ProductType"): Simple</li>
+                        <li>@T("Admin.Catalog.Products.Fields.ProductTemplate"): @Nop.Plugin.Soft2Print.Plugin.Soft2PrintProductTemplateName</li>
+                        <li>@T("Admin.Catalog.Products.Fields.Sku"): The Product ID that is used in soft2print</li>
+                    </ul><br />
+                    The rest is setup like any other product.
+
+
+                    <span class="listHeadline">There is a few exceptions where we need to setup a few extra things.</span>
+                    <ul class="spacedItems">
+                        <li>
+                            <span class="header">Print products:</span>
+                            A valid print product requires the '@Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.PrintImages' attribute.
+                            <span class="listHeadline">Attribute settings:</span>
+                            <ul>
+                                <li>@T("admin.catalog.products.productattributes.attributes.fields.attribute"): @Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.PrintImages </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.TextPrompt"): The value you wish the customer to see in the shopping cart, an example could be 'Images'</li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.AttributeControlType"): TextBox </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.IsRequired"): Checked </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="header">Photobook products:</span>
+                            A photobook can consist of the basis book (for example 24 pages) and optional extra pages, which are not included in the price of the base book.<br />
+                            To support this, you must create a product for the basis book and a product for the extra pages.<br /><br />
+
+                            You setup the base book like other Soft2Print products. The price you setup is only for the base number of pages.
+
+                            <span class="listHeadline">Possible product attributes:</span>
+                            <ul class="spacedItems">
+                                <li>
+                                    <span class="header">'@Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ExtraPages':</span>
+                                    Start by creating the product for the extra pages. You can use the same product for extra pages if the prices and campaigns are the same.<br />
+                                    <i>For example extra pages for A4 books, you do not have to create a product for the portrait version and another for the landscape version if you charge the customer the same for the extra pages.</i><br /><br />
+
+                                    The extra page product setup of extra pages should be like this:
+                                    <ul>
+                                        <li>@T("Admin.Catalog.Products.Fields.ProductType"): Simple </li>
+                                        <li>@T("Admin.Catalog.Products.Fields.ProductTemplate"): Simple product</li>
+                                        <li>@T("Admin.Catalog.Products.Fields.VisibleIndividually"): Unchecked </li>
+                                        <li>@T("Admin.Catalog.Products.Fields.Name"): Not used</li>
+                                        <li>@T("Admin.Catalog.Products.Fields.Published"): Checked </li>
+                                        <li>@T("Admin.Catalog.Products.Fields.Price"): Here you must setup the price for the extra pages</li>
+                                    </ul>
+                                    <br />
+                                    To assign the extra page product to the base book, go to the base book and add this attribute.
+                                    <span class="listHeadline">Attribute settings:</span>
+                                    <ul>
+                                        <li>@T("admin.catalog.products.productattributes.attributes.fields.attribute"): @Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ExtraPages </li>
+                                        <li>@T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.TextPrompt"): The value you want the customer to see in the shopping cart, an example could be 'Extra pages'</li>
+                                        <li>@T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.AttributeControlType"): Checkboxes</li>
+                                        <li>@T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.IsRequired"): Unchecked</li>
+                                        <li>
+                                            @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values"):<br />
+                                            Add a (Only one) new value with the value settings below.
+
+                                            <span class="listHeadline">Value settings:</span>
+                                            <ul>
+                                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values.Fields.AttributeValueType"): Associated to product </li>
+                                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values.Fields.AssociatedProduct"): Select pre - created extra pages product </li>
+                                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values.Fields.CustomerEntersQty"): Checked </li>
+                                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values.Fields.Name"): Not used </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="header">'@Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.MainPages':</span>
+                                    This attribute allows you to show the base page count of you book.
+                                    <span class="listHeadline">Attribute settings:</span>
+                                    <ul>
+                                        <li> @T("admin.catalog.products.productattributes.attributes.fields.attribute"): @Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.MainPages </li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.TextPrompt"): The value you want the customer to see in the shopping cart, an example could be 'Base pages'</li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.AttributeControlType"): TextBox </li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.IsRequired"): Unchecked </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="header">'@Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.TotalPages':</span>
+                                    This attribute allows you to show the total page count of you book.
+                                    <span class="listHeadline">Attribute settings:</span>
+                                    <ul>
+                                        <li> @T("admin.catalog.products.productattributes.attributes.fields.attribute"): @Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.TotalPages </li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.TextPrompt"): The value you want the customer to see, an example could be 'Pages'</li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.AttributeControlType"): TextBox </li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.IsRequired"): Unchecked </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <span class="listHeadline">We have a few optinoal options that changes the deta/behavior a bit</span>
+                    The usage of these allows you to set up a lot of different things, and almost only the emagination sets the limit.
+                    <ul class="spacedItems">
+                        <li>
+                            <span class="header">Specific theme start</span>
+                            This functionallity is used to op the soft2print modules with a pre defined theme.
+                            Setup the '@Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ThemeIdentifier' attribute on the product.
+                            <span class="listHeadline">Attribute settings:</span>
+                            <ul>
+                                <li>@T("admin.catalog.products.productattributes.attributes.fields.attribute"): @Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ThemeIdentifier </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.AttributeControlType"): TextBox </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.IsRequired"): Unchecked </li>
+                                <li> @T("admin.catalog.products.productattributes.attributes.validationrules.defaultvalue"): The Soft2Print theme identifier, ex. '<b>@Guid.NewGuid()</b>' </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="header">Use Specific theme structure</span>
+                            This functionallity is used to filter/define a specific collection of themes shown to the customer.<br />
+                            Setup the '@Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ThemeStrcuture' attribute on the product.
+                            <span class="listHeadline">Attribute settings:</span>
+                            <ul>
+                                <li>@T("admin.catalog.products.productattributes.attributes.fields.attribute"): @Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ThemeStrcuture </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.AttributeControlType"): TextBox </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.IsRequired"): Unchecked </li>
+                                <li> @T("admin.catalog.products.productattributes.attributes.validationrules.defaultvalue"): The Soft2Print theme structure identifier, ex. '<b>@Guid.NewGuid().ToString().Substring(0, 8)</b>' </li>
+                            </ul>
+                            <br /><br />
+                            In addition to this attribute, it is also possible to setup the attribute: '@Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ThemeStrcutureOnSite', <br />
+                            this will remove the '@T(ResourceCollection.Key.OpenModuleButton.Text)' button, and then list the themes below the product description.
+                            <span class="listHeadline">Attribute settings:</span>
+                            <ul>
+                                <li>@T("admin.catalog.products.productattributes.attributes.fields.attribute"): @Nop.Plugin.Soft2Print.Services.ProductAttributeService.AttributeKeys.ThemeStrcutureOnSite </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.AttributeControlType"): Checkboxes </li>
+                                <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Fields.IsRequired"): Unchecked </li>
+                                <li>
+                                    @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values"):<br />
+                                    Add a (Only one) new value with the value settings below. (By default this is done by using the predefined values)
+                                    <span class="listHeadline">Value settings:</span>
+                                    <ul>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values.Fields.AttributeValueType"): Simple </li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values.Fields.AssociatedProduct"): Select pre - created extra pages product </li>
+                                        <li> @T("admin.catalog.products.productattributes.attributes.values.fields.ispreselected"): Checked </li>
+                                        <li> @T("Admin.Catalog.Products.ProductAttributes.Attributes.Values.Fields.Name"): Not used </li>
+                                    </ul>
+                                </li>
+                            </ul>
+
+                        </li>
+                    </ul>
+
+
+                    <br />
+                    <br />
+                    <h4>Setting up '@T("Admin.Catalog.Products.ProductAttributes")':</h4>
+                    <ol>
+                        <li> Find the product you want to setup '@T("Admin.Catalog.Products.ProductAttributes")' for.</li>
+                        <li> Click '@T("admin.common.edit")'.</li>
+                        <li> Navigate to the tab '@T("Admin.Catalog.Products.ProductAttributes")'.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        @if (Model.IsProjectListPluginInstalled)
+        {
+            /**/
+            @*<div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            Project List is installed !!
+                        </div>
+                    </div>
+                </div>*@
+            /**/
+        }
+        else
+        {
+            /**/
+            @*<div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            Project List is not installed !!
+                        </div>
+                    </div>
+                </div>*@
+            /**/
+        }
+    </div>
+</div>

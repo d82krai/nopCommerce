@@ -21,6 +21,10 @@ namespace Nop.EPP.AlbumPrint.Infrastructure
         {
             endpointRouteBuilder.MapControllerRoute(AlbumPrintDefaults.AlbumPrintPageRouteName, "AlbumPrint/UploadPhotos",
                 new { controller = "UploadPhotos", action = "Index" });
+
+            endpointRouteBuilder.MapControllerRoute("AddAlbumProductToCart-Details",
+                "addalbumproducttocart/details/{productId:min(0)}/{shoppingCartTypeId:min(0)}",
+                new { controller = "UploadPhotos", action = "AddAlbumProductToCart_Details" });
         }
 
         /// <summary>

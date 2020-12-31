@@ -1,0 +1,10 @@
+﻿@model Models.OpenModule
+@if (Model.Show)
+{
+    Html.AppendScriptParts(Plugin.Location + "Script/Default.js");
+
+    <div class="add-to-cart">
+        <input type="button" value="@T(ResourceCollection.Key.OpenModuleButton.Text)" class="button-2 add-to-cart-button" onclick="soft2print.openModule.actions.open('@Model.Url', '#product-details-form');" />
+    </div>
+    <br />
+}

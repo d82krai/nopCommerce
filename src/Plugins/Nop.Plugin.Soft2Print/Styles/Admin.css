@@ -1,0 +1,25 @@
+﻿
+.html-admin-s2p-help ul.spacedItems > li,
+.html-admin-s2p-help ol.spacedItems > li {
+    padding-top: 15px;
+}
+
+
+.html-admin-s2p-help .listHeadline {
+    display: block;
+    font-weight: bold;
+    padding-top: 25px;
+}
+
+.html-admin-s2p-help ul > li > .listHeadline,
+.html-admin-s2p-help ol > li > .listHeadline {
+    padding-top: 5px;
+    font-weight: unset;
+    font-style: italic;
+}
+
+.html-admin-s2p-help ul > li > .header,
+.html-admin-s2p-help ol > li > .header {
+    display: block;
+    font-weight: bold;
+}
