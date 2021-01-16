@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
@@ -20,22 +21,35 @@ namespace Nop.EPP.AlbumPrint.Components
         private readonly IProductService _productService;
         private readonly IProductViewTrackerService _productViewTrackerService;
         private readonly IWorkContext _workContext;
+        private readonly ICategoryService _categoryService;
 
         public ProductViewTrackerViewComponent(ICustomerService customerService,
             IProductService productService,
             IProductViewTrackerService productViewTrackerService,
-            IWorkContext workContext)
+            IWorkContext workContext,
+            ICategoryService categoryService)
         {
             _customerService = customerService;
             _productService = productService;
             _productViewTrackerService = productViewTrackerService;
             _workContext = workContext;
+            _categoryService = categoryService;
         }
 
         public IViewComponentResult Invoke(string widgetZone, object additionalData)
         {
-            if (additionalData is AddToCartModel model && !Request.Path.Value.Contains("AlbumPrint"))
-                return View("~/Plugins/EPP.AlbumPrint/Views/PublicInfo.cshtml", model);
+            if (additionalData is AddToCartModel model)
+            {
+                //var product = _productService.GetProductById(model.ProductId);
+                var prodCatetegories = _categoryService.GetProductCategoriesByProductId(model.ProductId).FirstOrDefault();
+                if (prodCatetegories != null)
+                {
+                    var category = _categoryService.GetCategoryById(prodCatetegories.CategoryId);
+                    if (category.Name.ToLower().Contains("album print"))
+                        return View("~/Plugins/EPP.AlbumPrint/Views/PublicInfo.cshtml", model);
+                }
+                return Content("");
+            }
             else
                 return Content("");
 

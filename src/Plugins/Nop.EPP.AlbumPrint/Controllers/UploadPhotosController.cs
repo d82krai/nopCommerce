@@ -5,10 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
+using Nop.Core.Domain.Messages;
 using Nop.Core.Domain.Orders;
+using Nop.Data;
+using Nop.EPP.AlbumPrint.Domain;
+using Nop.EPP.AlbumPrint.Services;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Configuration;
+using Nop.Services.Customers;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
 using Nop.Services.Messages;
@@ -16,6 +21,7 @@ using Nop.Services.Orders;
 using Nop.Services.Security;
 using Nop.Services.Seo;
 using Nop.Services.Stores;
+using Nop.Services.Vendors;
 using Nop.Web.Factories;
 using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
@@ -33,6 +39,7 @@ namespace Nop.EPP.AlbumPrint.Controllers
     {
         #region Fields
 
+        private readonly IEppApService _eppApService;
         private readonly IProductService _productService;
         private readonly CatalogSettings _catalogSettings;
         private readonly IAclService _aclService;
@@ -51,12 +58,19 @@ namespace Nop.EPP.AlbumPrint.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IWebHelper _webHelper;
         private readonly IProductAttributeParser _productAttributeParser;
+        private readonly IRepository<ProductViewTrackerRecord> _productViewTrackerRecordRepository;
+        private readonly IEmailAccountService _emailAccountService;
+        private readonly EmailAccountSettings _emailAccountSettings;
+        private readonly ICustomerService _customerService;
+        private readonly IQueuedEmailService _queuedEmailService;
+        private readonly IVendorService _vendorService;
 
         #endregion
 
         #region Ctor 
 
         public UploadPhotosController(
+            IEppApService eppApService,
             IProductService productService,
             CatalogSettings catalogSettings,
             IAclService aclService,
@@ -74,9 +88,16 @@ namespace Nop.EPP.AlbumPrint.Controllers
             IProductAttributeService productAttributeService,
             ICategoryService categoryService,
             IWebHelper webHelper,
-            IProductAttributeParser productAttributeParser
+            IProductAttributeParser productAttributeParser,
+            IRepository<ProductViewTrackerRecord> productViewTrackerRecordRepository,
+            IEmailAccountService emailAccountService,
+            EmailAccountSettings emailAccountSettings,
+            ICustomerService customerService,
+            IQueuedEmailService queuedEmailService,
+            IVendorService vendorService
             )
         {
+            _eppApService = eppApService;
             _productService = productService;
             _catalogSettings = catalogSettings;
             _aclService = aclService;
@@ -95,6 +116,12 @@ namespace Nop.EPP.AlbumPrint.Controllers
             _categoryService = categoryService;
             _webHelper = webHelper;
             _productAttributeParser = productAttributeParser;
+            _productViewTrackerRecordRepository = productViewTrackerRecordRepository;
+            _emailAccountService = emailAccountService;
+            _emailAccountSettings = emailAccountSettings;
+            _customerService = customerService;
+            _queuedEmailService = queuedEmailService;
+            _vendorService = vendorService;
         }
 
         #endregion
@@ -298,7 +325,8 @@ namespace Nop.EPP.AlbumPrint.Controllers
             SaveItem(updatecartitem, addToCartWarnings, product, cartType, attributes, customerEnteredPriceConverted, rentalStartDate, rentalEndDate, quantity);
 
             //return result
-            return GetProductToCartDetails(addToCartWarnings, cartType, product);
+            var shopingCart = GetProductToCartDetails(addToCartWarnings, cartType, product, photoUploadId);
+            return shopingCart;
         }
 
 
@@ -348,7 +376,7 @@ namespace Nop.EPP.AlbumPrint.Controllers
         }
 
         protected virtual IActionResult GetProductToCartDetails(List<string> addToCartWarnings, ShoppingCartType cartType,
-           Product product)
+           Product product, string cloudFolderId)
         {
             if (addToCartWarnings.Any())
             {
@@ -414,6 +442,42 @@ namespace Nop.EPP.AlbumPrint.Controllers
 
                         //display notification message and update appropriate blocks
                         var shoppingCarts = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+
+                        //***Deepak
+                        var shoppingCartId = shoppingCarts.Where(m => m.ProductId == product.Id).FirstOrDefault().Id;
+                        EppAp eppAp = new EppAp()
+                        {
+                            ProductId = product.Id,
+                            CustomerId = _workContext.CurrentCustomer.Id,
+                            ShoppingCartId = shoppingCartId,
+                            CloudFolderId = cloudFolderId,
+                            AddedToShoppingCartOn = DateTime.Now,
+                            CloudProvider = "Wasabi"
+                        };
+                        _eppApService.Insert(eppAp);
+
+                        var vendor = _vendorService.GetVendorById(product.VendorId);
+                        var customer = _customerService.GetCustomerById(eppAp.CustomerId);
+                        var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
+                        if (emailAccount == null)
+                            emailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
+                        if (emailAccount == null)
+                            throw new NopException("Email account can't be loaded");
+                        var email = new QueuedEmail
+                        {
+                            Priority = QueuedEmailPriority.High,
+                            EmailAccountId = emailAccount.Id,
+                            FromName = emailAccount.DisplayName,
+                            From = emailAccount.Email,
+                            ToName = _customerService.GetCustomerFullName(customer),
+                            To = customer.Email,
+                            Subject = "[EPrintPost] Link to download your photos",
+                            Body = $"Hi {customer.SystemName},<br><br> Here is your link to download the files you uploaded:<br>" + _storeContext.CurrentStore.Url + $"DownloadPhotos/Download/{eppAp.CloudFolderId}<br><br>Thanks<br>EPrintPost Team",
+                            CreatedOnUtc = DateTime.UtcNow,
+                            DontSendBeforeDateUtc = DateTime.UtcNow,
+                            Bcc = vendor.Email
+                        };
+                        _queuedEmailService.InsertQueuedEmail(email);
 
                         var updatetopcartsectionhtml = string.Format(
                             _localizationService.GetResource("ShoppingCart.HeaderQuantity"),

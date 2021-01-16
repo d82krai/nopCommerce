@@ -10,6 +10,6 @@ namespace Nop.EPP.AlbumPrint
         /// Gets the configuration route name
         /// </summary>
         public static string AlbumPrintPageRouteName => "Plugin.EPP.AlbumPrint.UploadPhotos";
-
+        public static string DownloadPhotoRouteName => "Plugin.EPP.AlbumPrint.DownloadPhotos";
     }
 }

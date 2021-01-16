@@ -19,11 +19,19 @@
 
     Html.AddScriptParts(ResourceLocation.Footer, "//sdk.amazonaws.com/js/aws-sdk-2.619.0.min.js");
 
+    Html.AddScriptParts(ResourceLocation.Head, "//transloadit.edgly.net/releases/uppy/v1.5.2/uppy.min.js");
+    Html.AddCssFileParts("//transloadit.edgly.net/releases/uppy/v1.5.2/uppy.min.css");
+
     //title
     Html.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
     //meta
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+    Html.AddMetaDescriptionParts("abcd");
+    Html.AddMetaDescriptionParts("abcdaaaaaa");
+    Html.AddMetaKeywordParts("xyz");
+
     //page class
     Html.AppendPageCssClassParts("html-product-details-page");
 
@@ -90,7 +98,7 @@
 
                             <div class="add-to-cart">
 
-                                <input type="button" id="add-to-cart-button-@Model.Id" class="button-1 add-to-cart-button" value="ADD TO CART" data-productid="@Model.Id" onclick="addalbumproducttocart_details('@Url.RouteUrl("AddAlbumProductToCart-Details", new {productId = Model.Id, shoppingCartTypeId = 0 })', '#product-details-form');return false;" />
+                                <input type="button" id="add-to-cart-button-@Model.Id" class="button-1 add-to-cart-button" value="ADD TO CART" data-productid="@Model.Id" onclick="addalbumproducttocart_details('@Url.RouteUrl("AddAlbumProductToCart-Details", new {productId = Model.Id, shoppingCartTypeId = 1 })', '#product-details-form');return false;" />
 
                             </div>
 

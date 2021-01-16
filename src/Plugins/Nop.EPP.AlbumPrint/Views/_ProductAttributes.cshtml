@@ -101,12 +101,196 @@
 
 
 
-                    <div id="tab_@(cat11.Id)" class="tabcontent">
+                    <div id="tab_@(cat11.Id)" class="tabcontent" style="overflow:auto;">
 
                         @if (cat11.Name == "Album Sheets")
                         {
-                            <input id="photoUpload" type="file" name="photoUpload" multiple />
                             <input type="hidden" id="photoUploadId" name="photoUploadId" />
+
+                            <div>
+
+                                <select title="Apply paper type to all photos" class="form-control ddlAllPhotoSheetType">
+                                    @foreach (var sheetType in productAttributes)
+                                    {
+                                        <option value="@string.Concat("ddlVal", @sheetType.Id.ToString())">@sheetType.Name</option>
+                                    }
+                                </select>
+
+                                <label class="btn btn-default">
+                                    Add Photos <input id="photoUpload" multiple type="file" hidden>
+                                </label>
+
+                                <hr class="mt-2 mb-5">
+                                <div class="photoGallery row text-center text-lg-left">
+                                </div>
+                            </div>
+
+                            foreach (var attributeValue in productAttributes)
+                            {
+                                var attributeName = string.IsNullOrEmpty(attributeValue.PriceAdjustment) ?
+                                                           attributeValue.Name :
+                                                           T("Products.ProductAttributes.PriceAdjustment", attributeValue.Name, attributeValue.PriceAdjustment,
+                                                               attributeValue.CustomerEntersQty ? T("Products.ProductAttributes.PriceAdjustment.PerItem").Text : string.Empty).Text;
+
+
+                                <dd id="@($"{NopCatalogDefaults.ProductAttributePrefix}input_{attribute.Id}")" style="display:none;">
+                                    @switch (attribute.AttributeControlType)
+                                    {
+                                        case AttributeControlType.Checkboxes:
+                                        case AttributeControlType.ReadonlyCheckboxes:
+                                            {
+                                                <ul class="option-list">
+                                                    @*@foreach (var attributeValue in productAttributes)
+                                                        {*@
+                                                    <li>
+                                                        <input class="@string.Concat("chkVal", attributeValue.Id.ToString())" id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="checked" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null)
+                                                               @(attributeValue.CustomerEntersQty ? Html.Raw($"onchange=\"showHideCheckboxQuantity('{controlId}_{attributeValue.Id}')\"") : null) />
+                                                        <label for="@(controlId)_@(attributeValue.Id)">
+
+                                                            @{
+                                                                var prodModel = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProduct").FirstOrDefault().Value as Product;
+
+                                                                var prodViewModel = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProductModel").FirstOrDefault().Value as Nop.Web.Models.Catalog.ProductDetailsModel;
+                                                                var img = prodViewModel.PictureModels.FirstOrDefault();
+                                                                var thumbImageUrl = img?.ThumbImageUrl;
+
+                                                                var prodUrl = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProductUrl").FirstOrDefault().Value as string;
+
+                                                            }
+
+                                                            @if (prodModel.Published)
+                                                            {
+                                                                <a href="@prodUrl" target="_blank">
+                                                                    <img src="@thumbImageUrl" style="width:120px;" />
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@thumbImageUrl" style="width:120px;" />
+                                                            }
+
+                                                            @attributeName
+                                                        </label>
+
+                                                        @if (attributeValue.CustomerEntersQty)
+                                                        {
+                                                            <div class="qty-box" id="@(controlId)_@(attributeValue.Id)_qty_box" style="display:none">
+                                                                <label for="@(controlId)_@(attributeValue.Id)_qty">@(T("Products.ProductAttributes.PriceAdjustment.Quantity").Text)</label>
+                                                                <input type="text" class="@string.Concat("qtyVal", attributeValue.Id.ToString())" name="@(controlId)_@(attributeValue.Id)_qty" id="@(controlId)_@(attributeValue.Id)_qty" value="@(attributeValue.Quantity)" />
+                                                                <script asp-location="Footer">
+                                                        $(document).ready(function() {
+                                                            showHideCheckboxQuantity('@(controlId)_@(attributeValue.Id)');
+                                                        })
+                                                                </script>
+                                                            </div>
+                                                        }
+                                                    </li>
+                                                    @*}*@
+                                                </ul>
+                                            }
+                                            break;
+                                    }
+
+
+
+                                </dd>
+
+
+                            }
+
+                        }
+                        else if (cat11.Name == "Coverpad")
+                        {
+                            var product = productAttributes.FirstOrDefault().CustomProperties.Where(m => m.Key == "AssociatedProduct").FirstOrDefault().Value as Product;
+
+                            <input type="hidden" id="coverpadUploadId" name="coverpadUploadId" />
+                            <input type="hidden" id="coverpadMaxPhoto" name="coverpadMaxPhoto" value="@product.AdminComment" />
+
+                            <div>
+
+                                <label class="btn btn-default">
+                                    Add Photos <input id="coverpadUpload" multiple type="file" hidden>
+                                </label>
+
+                                <hr class="mt-2 mb-5">
+                                <div class="coverPadGallery row text-center text-lg-left">
+                                </div>
+                            </div>
+
+
+                            foreach (var attributeValue in productAttributes)
+                            {
+                                var attributeName = string.IsNullOrEmpty(attributeValue.PriceAdjustment) ?
+                                                           attributeValue.Name :
+                                                           T("Products.ProductAttributes.PriceAdjustment", attributeValue.Name, attributeValue.PriceAdjustment,
+                                                               attributeValue.CustomerEntersQty ? T("Products.ProductAttributes.PriceAdjustment.PerItem").Text : string.Empty).Text;
+
+
+                                <dd id="@($"{NopCatalogDefaults.ProductAttributePrefix}input_{attribute.Id}")" style="display:none;">
+                                    @switch (attribute.AttributeControlType)
+                                    {
+                                        case AttributeControlType.Checkboxes:
+                                        case AttributeControlType.ReadonlyCheckboxes:
+                                            {
+                                                <ul class="option-list">
+                                                    @*@foreach (var attributeValue in productAttributes)
+                                                        {*@
+                                                    <li>
+                                                        <input id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="checked" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null)
+                                                               @(attributeValue.CustomerEntersQty ? Html.Raw($"onchange=\"showHideCheckboxQuantity('{controlId}_{attributeValue.Id}')\"") : null) />
+                                                        <label for="@(controlId)_@(attributeValue.Id)">
+
+                                                            @{
+                                                                var prodModel = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProduct").FirstOrDefault().Value as Product;
+
+                                                                var prodViewModel = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProductModel").FirstOrDefault().Value as Nop.Web.Models.Catalog.ProductDetailsModel;
+                                                                var img = prodViewModel.PictureModels.FirstOrDefault();
+                                                                var thumbImageUrl = img?.ThumbImageUrl;
+
+                                                                var prodUrl = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProductUrl").FirstOrDefault().Value as string;
+
+                                                            }
+
+                                                            @if (prodModel.Published)
+                                                            {
+                                                                <a href="@prodUrl" target="_blank">
+                                                                    <img src="@thumbImageUrl" style="width:120px;" />
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@thumbImageUrl" style="width:120px;" />
+                                                            }
+
+                                                            @attributeName
+                                                        </label>
+
+                                                        @if (attributeValue.CustomerEntersQty)
+                                                        {
+                                                            <div class="qty-box" id="@(controlId)_@(attributeValue.Id)_qty_box" style="display:none">
+                                                                <label for="@(controlId)_@(attributeValue.Id)_qty">@(T("Products.ProductAttributes.PriceAdjustment.Quantity").Text)</label>
+                                                                <input type="text" name="@(controlId)_@(attributeValue.Id)_qty" id="@(controlId)_@(attributeValue.Id)_qty" value="@(attributeValue.Quantity)" />
+                                                                <script asp-location="Footer">
+                                                        $(document).ready(function() {
+                                                            showHideCheckboxQuantity('@(controlId)_@(attributeValue.Id)');
+                                                        })
+                                                                </script>
+                                                            </div>
+                                                        }
+                                                    </li>
+                                                    @*}*@
+                                                </ul>
+                                            }
+                                            break;
+                                    }
+
+
+
+                                </dd>
+
+
+                            }
+
                         }
                         else
                         {
@@ -133,6 +317,8 @@
                                                         <label for="@(controlId)_@(attributeValue.Id)">
 
                                                             @{
+                                                                var prodModel = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProduct").FirstOrDefault().Value as Product;
+
                                                                 var prodViewModel = attributeValue.CustomProperties.Where(m => m.Key == "AssociatedProductModel").FirstOrDefault().Value as Nop.Web.Models.Catalog.ProductDetailsModel;
                                                                 var img = prodViewModel.PictureModels.FirstOrDefault();
                                                                 var thumbImageUrl = img?.ThumbImageUrl;
@@ -141,9 +327,16 @@
 
                                                             }
 
-                                                            <a href="@prodUrl" target="_blank">
+                                                            @if (prodModel.Published)
+                                                            {
+                                                                <a href="@prodUrl" target="_blank">
+                                                                    <img src="@thumbImageUrl" style="width:120px;" />
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
                                                                 <img src="@thumbImageUrl" style="width:120px;" />
-                                                            </a>
+                                                            }
 
                                                             @attributeName
                                                         </label>
@@ -327,6 +520,64 @@
                 @(attributeChangeHandlerFuncName)();
                 @Html.Raw(attributeChangeScriptsBuilder.ToString())
             });
+        </script>
+
+        <script>
+            //var uppy = Uppy.Core()
+            //uppy.use(Uppy.DragDrop, { target: '.UppyDragDrop' })
+            //uppy.use(Uppy.Tus, { endpoint: '//master.tus.io/files/' })
+
+
+            //var Uppy = require('uppy/lib/core')
+            //var Dashboard = require('uppy/lib/plugins/Dashboard')
+            //var XHRUpload = require('uppy/lib/plugins/XHRUpload')
+            //const uppy = Uppy({ autoProceed: false })
+            //uppy.use(Dashboard, { target: '.UppyDragDrop', inline: true })
+            //uppy.use(XHRUpload, { endpoint: 'https://mywebsite.com/receive-file.php' })
+
+            //const uppy = Uppy.Core({ autoProceed: false })
+            //uppy.use(Uppy.Dashboard, { target: '.UppyDragDrop', inline: true, height: 450 })
+            //uppy.use(Uppy.Webcam, { target: Uppy.Dashboard })
+            //uppy.use(Uppy.Tus, { endpoint: 'https://localhost:44310/AlbumPrint/UploadPhotos/' })
+
+
+            const Dashboard = Uppy.Dashboard
+
+            const uppy = Uppy.Core({
+                debug: true,
+                autoProceed: false,
+                restrictions: {
+                    maxFileSize: 26214400,
+                    maxNumberOfFiles: 100,
+                    minNumberOfFiles: 10,
+                    allowedFileTypes: ['image/*']
+                }
+            })
+                .use(Dashboard, {
+                    trigger: '.UppyModalOpenerBtn',
+                    inline: true,
+                    target: '.UppyDragDrop',
+                    replaceTargetContent: true,
+                    showProgressDetails: true,
+                    note: 'Images only, 10–100 files, up to 25 MB',
+                    height: 470,
+                    metaFields: [
+                        { id: 'name', name: 'Name', placeholder: 'file name' },
+                        { id: 'caption', name: 'Caption', placeholder: 'describe what the image is about' }
+                    ],
+                    browserBackButtonClose: true
+                })
+
+                .use(Uppy.GoogleDrive, { target: Dashboard, companionUrl: 'https://companion.uppy.io' })
+                .use(Uppy.Dropbox, { target: Dashboard, companionUrl: 'https://companion.uppy.io' })
+                .use(Uppy.Instagram, { target: Dashboard, companionUrl: 'https://companion.uppy.io' })
+                //.use(Uppy.Facebook, { target: Dashboard, companionUrl: 'https://companion.uppy.io' })
+                //.use(Uppy.OneDrive, { target: Dashboard, companionUrl: 'https://companion.uppy.io' })
+                .use(Uppy.Webcam, { target: Dashboard })
+                //.use(Uppy.ScreenCapture, { target: Dashboard })
+                //.use(Uppy.ImageEditor, { target: Dashboard })
+                .use(Uppy.Tus, { endpoint: 'https://master.tus.io/files/' })
+
         </script>
     }
 }

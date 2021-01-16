@@ -25,6 +25,7 @@ namespace Nop.EPP.AlbumPrint.Infrastructure
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, AppSettings config)
         {
             builder.RegisterType<ProductViewTrackerService>().As<IProductViewTrackerService>().InstancePerLifetimeScope();
+            builder.RegisterType<EppApService>().As<IEppApService>().InstancePerLifetimeScope();
             builder.RegisterType<NopActionFilters>().As<IFilterProvider>();
             builder.RegisterType<YourCustomAuthorizeAttribute>().As<IActionFilter>();
         }
