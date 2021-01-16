@@ -1,5 +1,5 @@
 pool:
-  name: Azure Pipelines
+  vmImage: 'windows-latest'
 steps:
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
