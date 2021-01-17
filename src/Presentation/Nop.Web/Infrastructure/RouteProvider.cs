@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Nop.Services.Installation;
 using Nop.Web.Framework.Mvc.Routing;
 
 namespace Nop.Web.Infrastructure
@@ -206,8 +207,7 @@ namespace Nop.Web.Infrastructure
             endpointRouteBuilder.MapControllerRoute("CheckoutConfirm", $"{pattern}checkout/confirm",
                 new { controller = "Checkout", action = "Confirm" });
 
-            endpointRouteBuilder.MapControllerRoute("CheckoutCompleted",
-                pattern + "checkout/completed/{orderId:int}",
+            endpointRouteBuilder.MapControllerRoute("CheckoutCompleted", pattern + "checkout/completed/{orderId:int?}",
                 new { controller = "Checkout", action = "Completed" });
 
             //subscribe newsletters
@@ -567,7 +567,7 @@ namespace Nop.Web.Infrastructure
                 new { controller = "Common", action = "StoreClosed" });
 
             //install
-            endpointRouteBuilder.MapControllerRoute("Installation", $"{pattern}install",
+            endpointRouteBuilder.MapControllerRoute("Installation", $"{pattern}{NopInstallationDefaults.InstallPath}",
                 new { controller = "Install", action = "Index" });
 
             //error page
