@@ -1,0 +1,142 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Copyright>Copyright © Softec</Copyright> 
+    <Company>Softec ApS</Company> 
+    <Authors>Carsten Andersen</Authors> 
+    <Version>1.0.0</Version> 
+    <Description></Description> 
+    <PackageLicenseUrl></PackageLicenseUrl> 
+    <PackageProjectUrl></PackageProjectUrl> 
+    <RepositoryUrl></RepositoryUrl> 
+    <RepositoryType></RepositoryType> 
+    <AssemblyName>Nop.Plugin.Soft2Print</AssemblyName> 
+    <RootNamespace>Nop.Plugin.Soft2Print</RootNamespace>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="language_en.xml" />
+    <None Remove="logo.jpg" />
+    <None Remove="plugin.json" />
+    <None Remove="Script\Default.js" />
+    <None Remove="Styles\Admin.css" />
+    <None Remove="Styles\ViewModule.css" />
+    <None Remove="Views\Configure.cshtml" />
+    <None Remove="Views\Help.cshtml" />
+    <None Remove="Views\OpenEditor_ProductBox.cshtml" />
+    <None Remove="Views\ThemeList\ThemeList.cshtml" />
+    <None Remove="Views\ThemeList\_Theme.cshtml" />
+    <None Remove="Views\ThemeList\_ViewImports.cshtml" />
+    <None Remove="Views\OpenModuleButton\ProductBox.cshtml" />
+    <None Remove="Views\OpenModuleButton\ProductDetails.cshtml" />
+    <None Remove="Views\OpenModuleButton\_ViewImports.cshtml" />
+    <None Remove="Views\ProductList.cshtml" />
+    <None Remove="Views\ProductTemplate.Soft2Print.Simple.cshtml" />
+    <None Remove="Views\ViewModule.EaseInFullScreen.cshtml" />
+    <None Remove="Views\ViewModule.FullScreen.cshtml" />
+    <None Remove="Views\ViewModule\_ViewImports.cshtml" />
+    <None Remove="Views\_IFrame.cshtml" />
+    <None Remove="Views\_Soft2Print.AddToCart.cshtml" />
+    <None Remove="Views\_ViewImports.cshtml" />
+  </ItemGroup>
+  
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\Nop.Web\Plugins\Soft2Print</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\Presentation\Nop.Web\Plugins\Soft2Print</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="language_en.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Script\Default.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Styles\Admin.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Styles\ViewModule.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ThemeList\_Theme.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ThemeList\ThemeList.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ThemeList\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ProductList.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Help.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\OpenModuleButton\ProductBox.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\OpenModuleButton\ProductDetails.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\OpenModuleButton\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ViewModule\FullScreen.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ViewModule\EaseInFullScreen.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ViewModule\_IFrame.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ViewModule\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Presentation\Nop.Web.Framework\Nop.Web.Framework.csproj" />
+    <ProjectReference Include="..\..\Presentation\Nop.Web\Nop.Web.csproj" />
+  </ItemGroup>
+  
+  <!-- This target execute after "Build" target -->
+  <Target Name="NopTarget" AfterTargets="Build">
+    <!-- Delete unnecessary libraries from plugins path -->
+    <!-- <MSBuild Projects="$(MSBuildProjectDirectory)\..\..\..\Build\ClearPluginAssemblies.proj" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" /> -->
+  </Target>
+
+</Project>

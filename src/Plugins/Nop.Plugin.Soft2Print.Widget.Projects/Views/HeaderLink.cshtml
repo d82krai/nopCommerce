@@ -1,0 +1,6 @@
+﻿@model ViewModel.HeaderLink
+
+@if (Model.Show)
+{
+    <li><a href="@Url.RouteUrl((Model.usePublicUrl) ?  RouteProvider.ProjectList_Public: RouteProvider.ProjectList)" class="ico-projectlist">@T(ResourceCollection.Key.HeaderLink.Label)</a></li>
+}

@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Soft2Print",
+  "FriendlyName": "Soft2Print Projects",
+  "SystemName": "Soft2Print.Widget.Projects",
+  "Version": "2.00",
+  "SupportedVersions": [ "4.10" ],
+  "Author": "Carsten Andersen",
+  "DisplayOrder": 2,
+  "FileName": "Nop.Plugin.Soft2Print.Widget.Projects.dll",
+  "Description": "This soft2print plugin contain all project presentation handling. \r\nRequirement: Soft2print.Base"
+}

@@ -1,0 +1,51 @@
+﻿@model ViewModel.ProjectList
+@using Nop.Web.Models.Customer
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+    //page class
+    Html.AppendPageCssClassParts("html-account-page");
+    Html.AppendPageCssClassParts("html-projects-page");
+    Html.AppendCssFileParts(Plugin.Location + "Styles/Default.css");
+    Html.AppendScriptParts(Plugin.Location + "Script/Default.js");
+}
+
+@await Html.PartialAsync(Plugin.Location + "Views/Script/_Settings.cshtml")
+
+<div class="page account-page projects-page">
+    <div class="page-title">
+        <h1>@T(ResourceCollection.Key.DedicatedProjectList.Header)</h1>
+    </div>
+    <div class="page-body">
+        @if (Model.Projects.Count() > 0)
+        {
+            int minibuttons = 0;
+            if (Model.Projects != null)
+            {
+                if (Model.Projects.Any())
+                {
+                    if (Model.Projects.First().ShowRenameProject) { minibuttons++; }
+                    if (Model.Projects.First().ShowCopyProject) { minibuttons++; }
+                    if (Model.Projects.First().ShowDeleteProject) { minibuttons++; }
+                }
+            }
+
+            <div class="soft2print-ProjectList buttons-@minibuttons product-@Model.ViewMode.ToString().ToLower()">
+                <div class="item-grid">
+                    @foreach (var project in Model.Projects)
+                    {
+                        @await Html.PartialAsync(Plugin.Location + "Views/_project.cshtml", project)
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="no-data">
+                @T(ResourceCollection.Key.DedicatedProjectList.NoProjects)
+            </div>
+        }
+    </div>
+</div>

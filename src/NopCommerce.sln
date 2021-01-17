@@ -55,9 +55,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Widgets.Facebook
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.MultiFactorAuth.GoogleAuthenticator", "Plugins\Nop.Plugin.MultiFactorAuth.GoogleAuthenticator\Nop.Plugin.MultiFactorAuth.GoogleAuthenticator.csproj", "{F9F61CE0-6FC0-43A5-930A-A27099F4DE44}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E8FC6874-E230-468A-9685-4747354B92FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.EPP.AlbumPrint", "Plugins\Nop.EPP.AlbumPrint\Nop.EPP.AlbumPrint.csproj", "{58825892-6EAA-45C3-8B50-D55A7C3B7E8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Tests", "Tests\Nop.Tests\Nop.Tests.csproj", "{FD31C133-B4DE-4BB2-B327-1D0E2F2C95D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Soft2Print", "Plugins\Nop.Plugin.Soft2Print\Nop.Plugin.Soft2Print.csproj", "{FDFAD857-24C2-494D-9892-5DDE5EDC57A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nop.Plugin.Soft2Print.Widget.Projects", "Plugins\Nop.Plugin.Soft2Print.Widget.Projects\Nop.Plugin.Soft2Print.Widget.Projects.csproj", "{76940B32-334C-42F4-8F9C-6AF902D5836E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

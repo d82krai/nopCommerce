@@ -1,0 +1,8 @@
+﻿@model ViewModel.Project
+
+<li>- <a href="#" onclick="soft2print.project.actions.openProject(@Model.Id);">@Model.Name</a></li>
+@if (Model.InheritedBy != null)
+{
+    @await Html.PartialAsync("~/Plugins/Soft2Print.Widget.Projects/Views/_Project.InheritedBy.cshtml", Model.InheritedBy)
+}
+

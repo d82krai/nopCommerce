@@ -1,0 +1,36 @@
+﻿@model ViewModel.ProjectList
+@* @await Html.PartialAsync("_Header") *@
+
+@{
+    Html.AppendScriptParts(Plugin.Location + "Script/Default.js");
+    Html.AppendCssFileParts(Plugin.Location + "Styles/Default.css");
+}
+
+@if (Model.Show)
+{
+    @await Html.PartialAsync(Plugin.Location + "Views/Script/_Settings.cshtml")
+
+    int minibuttons = 0;
+    if (Model.Projects != null)
+    {
+        if (Model.Projects.Any())
+        {
+            if (Model.Projects.First().ShowRenameProject) { minibuttons++; }
+            if (Model.Projects.First().ShowCopyProject) { minibuttons++; }
+            if (Model.Projects.First().ShowDeleteProject) { minibuttons++; }
+        }
+    }
+    <a name="projectList"></a>
+    <div class="soft2print-ProjectList buttons-@minibuttons product-@Model.ViewMode.ToString().ToLower()">
+        <div class="title">
+
+            <strong>@T(ResourceCollection.Key.ProductDetails.Header)</strong>
+        </div>
+        <div class="item-grid">
+            @foreach (var project in Model.Projects)
+            {
+                @await Html.PartialAsync(Plugin.Location + "Views/_project.cshtml", project)
+            }
+        </div>
+    </div>
+}

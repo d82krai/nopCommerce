@@ -1,0 +1,21 @@
+﻿@model ViewModel.ThemeList
+
+@{
+    Html.AppendCssFileParts(Plugin.Location + "Styles/Default.css");
+    Html.AppendScriptParts(Plugin.Location + "Script/Default.js");
+}
+
+@if (Model.Show)
+{
+    <div class="soft2print-ThemeList buttons-1 product-grid">
+        <div class="title">
+            <strong>@T(ResourceCollection.Key.ThemeList.Header)</strong>
+        </div>
+        <div class="item-grid">
+            @foreach (var theme in Model.Themes)
+            {
+                @await Html.PartialAsync(Plugin.Location + "Views/ThemeList/_Theme.cshtml", theme)
+            }
+        </div>
+    </div>
+}

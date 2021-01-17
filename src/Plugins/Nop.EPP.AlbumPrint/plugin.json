@@ -1,0 +1,11 @@
+﻿{
+  "Group": "EPrintPost",
+  "FriendlyName": "EPrintPost Album",
+  "SystemName": "Nop.EPP.AlbumPrint",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.20", "4.30", "4.40" ],
+  "Author": "deep.k.rai@gmail.com",
+  "DisplayOrder": 1,
+  "FileName": "Nop.EPP.AlbumPrint.dll",
+  "Description": "This plugin extend the nopCommerce and add the Album Printing feature."
+}

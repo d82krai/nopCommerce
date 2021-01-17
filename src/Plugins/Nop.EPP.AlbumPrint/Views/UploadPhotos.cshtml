@@ -1,0 +1,128 @@
+﻿@model Nop.Web.Models.Catalog.ProductDetailsModel
+@using Nop.Core.Domain.Seo;
+@inject Nop.Core.IWebHelper webHelper
+@inject SeoSettings seoSettings
+@{
+    Layout = "_ColumnsOne";
+
+    //Html.AddScriptParts(ResourceLocation.Footer, "//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js");
+    //Html.AddScriptParts(ResourceLocation.Footer, "//cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/esm/popper.min.js");
+
+    Html.AddScriptParts(ResourceLocation.Footer, "//stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js");
+    Html.AddCssFileParts("//stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css");
+
+    Html.AddScriptParts(ResourceLocation.Footer, "~/Plugins/EPP.AlbumPrint/Content/libs/dropzone-5.7.0/dist/min/dropzone.min.js");
+    Html.AddCssFileParts("~/Plugins/EPP.AlbumPrint/Content/libs/dropzone-5.7.0/dist/min/dropzone.min.css");
+
+    Html.AddScriptParts(ResourceLocation.Footer, "~/Plugins/EPP.AlbumPrint/Content/scripts/UploadPhotos.js");
+    Html.AddCssFileParts("~/Plugins/EPP.AlbumPrint/Content/css/UploadPhotos.css");
+
+    Html.AddScriptParts(ResourceLocation.Footer, "//sdk.amazonaws.com/js/aws-sdk-2.619.0.min.js");
+
+    Html.AddScriptParts(ResourceLocation.Head, "//transloadit.edgly.net/releases/uppy/v1.5.2/uppy.min.js");
+    Html.AddCssFileParts("//transloadit.edgly.net/releases/uppy/v1.5.2/uppy.min.css");
+
+    //title
+    Html.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    //meta
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+    Html.AddMetaDescriptionParts("abcd");
+    Html.AddMetaDescriptionParts("abcdaaaaaa");
+    Html.AddMetaKeywordParts("xyz");
+
+    //page class
+    Html.AppendPageCssClassParts("html-product-details-page");
+
+    //canonical URL
+    if (seoSettings.CanonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, webHelper.CurrentRequestProtocol).ToLowerInvariant();
+        Html.AddCanonicalUrlParts(productUrl, seoSettings.QueryStringInCanonicalUrlsEnabled);
+    }
+
+    //open graph META tags
+    if (seoSettings.OpenGraphMetaTags)
+    {
+        Html.AddHeadCustomParts("<meta property=\"og:type\" content=\"product\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:title\" content=\"" + Html.Encode(Model.Name) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:description\" content=\"" + Html.Encode(Nop.Core.Html.HtmlHelper.StripTags(Model.MetaDescription)) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:image\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:image:url\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:url\" content=\"" + webHelper.GetThisPageUrl(false) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:site_name\" content=\"" + Html.Encode(Model.CurrentStoreName) + "\" />");
+    }
+
+    //Twitter META tags
+    if (seoSettings.TwitterMetaTags)
+    {
+        Html.AddHeadCustomParts("<meta property=\"twitter:card\" content=\"summary\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:site\" content=\"" + Html.Encode(Model.CurrentStoreName) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:title\" content=\"" + Html.Encode(Model.Name) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:description\" content=\"" + Html.Encode(Nop.Core.Html.HtmlHelper.StripTags(Model.MetaDescription)) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:image\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:url\" content=\"" + webHelper.GetThisPageUrl(false) + "\" />");
+    }
+}
+<!--product breadcrumb-->
+@*@section Breadcrumb
+    {
+        @await Html.PartialAsync("_ProductBreadcrumb", Model.Breadcrumb)
+    }*@
+@*@await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.ProductDetailsAfterBreadcrumb, additionalData = Model })*@
+<div class="page product-details-page">
+    <div class="page-body">
+        <form asp-route="Product" asp-route-sename="@Model.SeName" method="post" id="product-details-form">
+
+            <div data-productid="@Model.Id">
+                <div class="product-essential">
+                    <div class="overview">
+                        <div class="product-name">
+                            <h1>
+                                @Model.Name
+                            </h1>
+                        </div>
+
+                        <!--price & add to cart & estimate shipping-->
+                        @{
+                            var dataDictPrice = new ViewDataDictionary(ViewData);
+                            dataDictPrice.TemplateInfo.HtmlFieldPrefix = $"price_{Model.Id}";
+                            @await Html.PartialAsync("~/Views/Product/_ProductPrice.cshtml", Model.ProductPrice, dataDictPrice)
+
+                            @await Html.PartialAsync("~/Views/Product/_ProductTierPrices.cshtml", Model.TierPrices)
+
+                            var dataDictAddToCart = new ViewDataDictionary(ViewData);
+                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
+                            @*@await Html.PartialAsync("~/Views/Product/_AddToCart.cshtml", Model.AddToCart, dataDictAddToCart)*@
+
+                            <div class="add-to-cart">
+
+                                <input type="button" id="add-to-cart-button-@Model.Id" class="button-1 add-to-cart-button" value="ADD TO CART" data-productid="@Model.Id" onclick="addalbumproducttocart_details('@Url.RouteUrl("AddAlbumProductToCart-Details", new {productId = Model.Id, shoppingCartTypeId = 1 })', '#product-details-form');return false;" />
+
+                            </div>
+
+                        }
+
+
+
+
+
+
+
+
+
+                        <!--attributes-->
+                        @{
+                            var dataDictAttributes = new ViewDataDictionary(ViewData);
+                            dataDictAttributes.TemplateInfo.HtmlFieldPrefix = $"attributes_{Model.Id}";
+                            @await Html.PartialAsync("~/Plugins/EPP.AlbumPrint/Views/_ProductAttributes.cshtml", Model.ProductAttributes, dataDictAttributes)
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+﻿@model Nop.Web.Models.Catalog.ProductDetailsModel.AddToCartModel
+@{
+    Layout = "";
+
+    Html.AddScriptParts(ResourceLocation.Footer, "~/Plugins/EPP.AlbumPrint/Content/scripts/AlbumPrint.js");
+    Html.AddCssFileParts("~/Plugins/EPP.AlbumPrint/Content/css/AlbumPrint.css");
+}
+
+
+<input type="button" id="add-to-cart-button-adv-46" onclick="goToUploadPhotosPage()" class="button-1 add-to-cart-button valid" value="Upload Photos" data-productid="46" aria-invalid="false">
+
+<script asp-location="Footer">
+    $(window).on('load', function () {
+        //alert("asdfsdf");
+    });
+
+    function goToUploadPhotosPage() {
+        window.location = "/AlbumPrint/UploadPhotos?productId=" + @Model.ProductId;
+    }
+</script>

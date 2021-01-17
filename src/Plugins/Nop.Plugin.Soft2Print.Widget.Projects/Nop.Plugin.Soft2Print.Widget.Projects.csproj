@@ -1,0 +1,130 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Copyright>Copyright © Softec</Copyright> 
+    <Company>Softec ApS</Company> 
+    <Authors>Carsten Andersen</Authors> 
+    <Version>1.0.0</Version> 
+    <Description></Description> 
+    <PackageLicenseUrl></PackageLicenseUrl> 
+    <PackageProjectUrl></PackageProjectUrl> 
+    <RepositoryUrl></RepositoryUrl> 
+    <RepositoryType></RepositoryType> 
+    <AssemblyName>Nop.Plugin.Soft2Print.Widget.Projects</AssemblyName> 
+    <RootNamespace>Nop.Plugin.Soft2Print.Widget.Projects</RootNamespace>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="logo.jpg" />
+    <None Remove="plugin.json" />
+    <None Remove="Script\Default.js" />
+    <None Remove="Styles\Default.css" />
+    <None Remove="Views\AccountLink.cshtml" />
+    <None Remove="Views\Configure.cshtml" />
+    <None Remove="Views\HeaderLink.cshtml" />
+    <None Remove="Views\OpenEditor_ProductBox.cshtml" />
+    <None Remove="Views\ProductTemplate.Soft2Print.Simple.cshtml" />
+    <None Remove="Views\ProjectList.Dedicated.ColumnsOne.cshtml" />
+    <None Remove="Views\ProjectList.Dedicated.ColumnsTwo.cshtml" />
+    <None Remove="Views\ProjectList.ProductDetails.cshtml" />
+    <None Remove="Views\Script\_Settings.cshtml" />
+    <None Remove="Views\_Project.cshtml" />
+    <None Remove="Views\_Project.InheritedBy.cshtml" />
+    <None Remove="Views\_Soft2Print.AddToCart.cshtml" />
+    <None Remove="Views\_ViewImports.cshtml" />
+  </ItemGroup>
+  
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\Nop.Web\Plugins\Soft2Print.Widget.Projects</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\Nop.Web\Plugins\Soft2Print.Widget.Projects</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Script\Default.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Styles\Default.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\ProjectList.Dedicated.ColumnsOne.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ProjectList.Dedicated.ColumnsTwo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\AccountLink.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\HeaderLink.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Script\_Settings.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\_Project.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ProjectList.ProductDetails.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\_Project.InheritedBy.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nop.Web.Framework\Nop.Web.Framework.csproj" />
+    <ProjectReference Include="..\Nop.Web\Nop.Web.csproj" />
+    <ProjectReference Include="..\Nop.Plugin.Soft2Print\Nop.Plugin.Soft2Print.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  
+  <!-- This target execute after "Build" target -->
+  <Target Name="NopTarget" AfterTargets="Build">
+    <!-- Delete unnecessary libraries from plugins path -->
+    <!-- <MSBuild Projects="$(MSBuildProjectDirectory)\..\..\..\Build\ClearPluginAssemblies.proj" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" /> -->
+  </Target>
+
+</Project>

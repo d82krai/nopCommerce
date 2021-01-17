@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Soft2Print",
+  "FriendlyName": "Soft2Print",
+  "SystemName": "Soft2Print",
+  "Version": "2.00",
+  "SupportedVersions": [ "4.10" ],
+  "Author": "Carsten Andersen",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Soft2Print.dll",
+  "Description": "This is the main soft2print plugin."
+}

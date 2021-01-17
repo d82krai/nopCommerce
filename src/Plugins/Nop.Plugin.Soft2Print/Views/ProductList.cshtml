@@ -1,0 +1,64 @@
+﻿@{
+    Layout = "_AdminLayout";
+}
+@model ViewModel.ProductList
+@{
+    //page title
+    ViewBag.Title = "Soft2Print Product list";
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("S2PProductList");
+    //Html.AppendPageCssClassParts("html-admin-s2p-productlist");
+    Html.AppendCssFileParts(Plugin.Location + "Styles/Admin.css");
+}
+
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        Soft2Print Product list
+    </h1>
+</div>
+
+<div class="content html-admin-s2p-productlist">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default panel-search">
+                <div class="panel-body">
+                    This is a list of products from Soft2Print that is not yet setup on your ecommerce
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="products-grid"></div>
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $("#products-grid").kendoGrid({
+                                dataSource: {
+                                    data: [
+                                        @Html.Raw(string.Join(",", Model.Products.Select(i => $"{{ Sku: '{i.Sku}', Name: '{i.Name}', Created: {i.IsCreatedButNotPublished.ToString().ToLower()} }}")))
+                                        ],
+                                },
+                                columns: [
+                                    {
+                                        field: "Sku",
+                                        title: "SKU",
+                                        width: 200
+                                    },
+                                    {
+                                        field: "Name",
+                                        title: "Soft2Print product name",
+                                    },
+                                    {
+                                        field: "Created",
+                                        title: "Created, but not published",
+                                        width: 100,
+                                        template: '# if(Created) {# <i class="fa fa-check true-icon"></i> #} else {# <i class="fa fa-close false-icon"></i> #} #'
+                                    }
+                                ]
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,6 @@
+﻿@model ViewModel.AccountLink
+
+@if (Model.Show)
+{
+    <li class="customer-projects"><a href="@Url.RouteUrl(RouteProvider.ProjectList)" class="@(Model.Active ? "active" : "inactive")">@T(ResourceCollection.Key.AccountLink.Label)</a></li>
+}

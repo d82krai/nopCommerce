@@ -1,0 +1,42 @@
+﻿
+.soft2print-ProjectList.buttons-0 .project-open {
+    width: 100%;
+}
+
+.soft2print-ProjectList.buttons-1 .project-open {
+    width: 80%;
+}
+
+.soft2print-ProjectList.buttons-2 .project-open {
+    width: 60%;
+}
+
+.soft2print-ProjectList.buttons-3 .project-open {
+    width: 40%;
+}
+
+
+
+.soft2print-ProjectList .project-rename {
+    background-image: url('/Themes/DefaultClean/Content/images/edit_.png');
+}
+
+.soft2print-ProjectList .project-copy {
+    background-image: url('/Themes/DefaultClean/Content/images/new.png');
+}
+
+.soft2print-ProjectList .project-delete {
+    background-image: url('/Themes/DefaultClean/Content/images/remove_.png');
+}
+
+
+.html-projects-page .soft2print-ProjectList .item-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: space-evenly;
+}
+
+    .html-projects-page .soft2print-ProjectList .item-grid > div {
+        min-width: 30%;
+    }

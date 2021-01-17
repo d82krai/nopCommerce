@@ -1,0 +1,100 @@
+﻿@model ViewModel.Project
+
+@{
+    var prodructItemButtonsCounter = 1;
+
+    if (Model.ShowRenameProject)
+    {
+        prodructItemButtonsCounter++;
+    }
+    if (Model.ShowCopyProject)
+    {
+        prodructItemButtonsCounter++;
+    }
+    if (Model.ShowDeleteProject)
+    {
+        prodructItemButtonsCounter++;
+    }
+}
+
+<div class="item-box">
+    <div class="product-item project-item">
+        @await Component.InvokeAsync("Widget", new { widgetZone = "project_preview_before", additionalData = Model.Id })
+        @if (!string.IsNullOrEmpty(Model.PreviewUrl))
+        {
+            <div class="picture">
+                <a href="#" onclick="soft2print.project.actions.openProject(@Model.Id);">
+                    <img src="/Themes/DefaultClean/Content/images/loading.gif" onload="soft2print.project.actions.setPreview(this, '@Model.PreviewUrl');" />
+                </a>
+            </div>
+        }
+        @await Component.InvokeAsync("Widget", new { widgetZone = "project_preview_after", additionalData = Model.Id })
+        <div class="details">
+            <h2 class="product-title project-title">
+                <a href="#" onclick="soft2print.project.actions.openProject(@Model.Id);">@Model.Name</a>
+            </h2>
+
+            @if (Model.ShowDetails)
+            {
+                <div class="prices project-details">
+                    <ul>
+                        @if (!string.IsNullOrEmpty(Model.Product))
+                        {
+                            <li><span>@T(ResourceCollection.Key.General.Details.Product)</span> <span>@Model.Product</span></li>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Created))
+                        {
+                            <li><span>@T(ResourceCollection.Key.General.Details.Created)</span> <span>@Model.Created</span></li>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.LastChanged))
+                        {
+                            <li><span>@T(ResourceCollection.Key.General.Details.LastChanged)</span> <span>@Model.LastChanged</span></li>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Theme))
+                        {
+                            <li><span>@T(ResourceCollection.Key.General.Details.Theme)</span> <span>@Model.Theme</span></li>
+                        }
+                    </ul>
+                </div>
+
+            }
+            @if (Model.InheritedBy != null)
+            {
+                <div class="prices">
+                    @T("Plugins.Soft2Print.Fields.Product.Details.ProjectList.History")<br />
+                    <ul>
+                        @await Html.PartialAsync("~/Plugins/Soft2Print.Widget.Projects/Views/_Project.InheritedBy.cshtml", Model.InheritedBy)
+                    </ul>
+                </div>
+                <br />
+            }
+            <div class="add-info">
+                @await Component.InvokeAsync("Widget", new { widgetZone = "project_buttons_before", additionalData = Model.Id })
+                <div class="buttons items-@prodructItemButtonsCounter">
+                    @if (Model.Locked)
+                    {
+                        <input type="button" value="@T(ResourceCollection.Key.General.OpenEditor.View)" title="@T(ResourceCollection.Key.General.OpenEditor.View)" class="button-2 product-box-add-to-cart-button project-open" onclick="soft2print.project.actions.openProject(@Model.Id);" />
+                    }
+                    else
+                    {
+                        <input type="button" value="@T(ResourceCollection.Key.General.OpenEditor.Edit)" title="@T(ResourceCollection.Key.General.OpenEditor.Edit)" class="button-2 product-box-add-to-cart-button project-open" onclick="soft2print.project.actions.openProject(@Model.Id);" />
+                    }
+
+                    @if (Model.ShowRenameProject)
+                    {
+                        <input type="button" value="@T(ResourceCollection.Key.General.Action.Rename)" title="@T(ResourceCollection.Key.General.Action.Rename)" class="button-2 add-to-compare-list-button project-rename" onclick="alert('Rename: ' + @Model.Id); return false;" />
+                    }
+                    @if (Model.ShowCopyProject)
+                    {
+                        <input type="button" value="@T(ResourceCollection.Key.General.Action.Copy)" title="@T(ResourceCollection.Key.General.Action.Copy)" class="button-2 add-to-compare-list-button project-copy" onclick="soft2print.project.actions.copyProject(@Model.Id);" />
+                    }
+                    @if (Model.ShowDeleteProject)
+                    {
+                        <input type="button" value="@T(ResourceCollection.Key.General.Action.Delete)" title="@T(ResourceCollection.Key.General.Action.Delete)" class="button-2 add-to-compare-list-button project-delete" onclick="soft2print.project.actions.deleteProject(@Model.Id);" />
+                    }
+                </div>
+                @await Component.InvokeAsync("Widget", new { widgetZone = "project_buttons_after", additionalData = Model.Id })
+            </div>
+        </div>
+    </div>
+</div>
