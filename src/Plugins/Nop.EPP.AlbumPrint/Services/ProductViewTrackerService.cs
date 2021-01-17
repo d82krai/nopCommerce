@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Nop.Data;
 using Nop.EPP.AlbumPrint.Domain;
 
@@ -18,11 +19,11 @@ namespace Nop.EPP.AlbumPrint.Services
         /// Logs the specified record.
         /// </summary>
         /// <param name="record">The record.</param>
-        public virtual void Log(ProductViewTrackerRecord record)
+        public virtual async Task Log(ProductViewTrackerRecord record)
         {
             if (record == null)
                 throw new ArgumentNullException(nameof(record));
-            _productViewTrackerRecordRepository.Insert(record);
+            await _productViewTrackerRecordRepository.InsertAsync(record);
         }
     }
 }

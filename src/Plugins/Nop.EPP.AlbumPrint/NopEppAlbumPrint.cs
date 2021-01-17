@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Nop.Services.Cms;
 using Nop.Services.Plugins;
 using Nop.Web.Framework.Infrastructure;
@@ -30,6 +31,11 @@ namespace Nop.EPP.AlbumPrint
         /// </summary>
         /// <returns>Widget zones</returns>
         public IList<string> GetWidgetZones()
+        {
+            return new List<string> { PublicWidgetZones.ProductDetailsAddInfo };
+        }
+
+        public async Task<IList<string>> GetWidgetZonesAsync()
         {
             return new List<string> { PublicWidgetZones.ProductDetailsAddInfo };
         }

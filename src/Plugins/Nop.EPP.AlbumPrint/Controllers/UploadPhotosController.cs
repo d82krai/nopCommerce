@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
@@ -128,9 +129,9 @@ namespace Nop.EPP.AlbumPrint.Controllers
 
         #region Methods
 
-        public IActionResult Index(int productId, int updatecartitemid = 0)
+        public async Task<IActionResult> Index(int productId, int updatecartitemid = 0)
         {
-            var product = _productService.GetProductById(productId);
+            var product = await _productService.GetProductByIdAsync(productId);
             if (product == null || product.Deleted)
                 return InvokeHttp404();
 
@@ -138,14 +139,14 @@ namespace Nop.EPP.AlbumPrint.Controllers
                 //published?
                 (!product.Published && !_catalogSettings.AllowViewUnpublishedProductPage) ||
                 //ACL (access control list) 
-                !_aclService.Authorize(product) ||
+                !await _aclService.AuthorizeAsync(product) ||
                 //Store mapping
-                !_storeMappingService.Authorize(product) ||
+                !await _storeMappingService.AuthorizeAsync(product) ||
                 //availability dates
                 !_productService.ProductIsAvailable(product);
             //Check whether the current user has a "Manage products" permission (usually a store owner)
             //We should allows him (her) to use "Preview" functionality
-            var hasAdminAccess = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel) && _permissionService.Authorize(StandardPermissionProvider.ManageProducts);
+            var hasAdminAccess = await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel) && await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts);
             if (notAvailable && !hasAdminAccess)
                 return InvokeHttp404();
 
@@ -153,80 +154,83 @@ namespace Nop.EPP.AlbumPrint.Controllers
             if (!product.VisibleIndividually)
             {
                 //is this one an associated products?
-                var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
+                var parentGroupedProduct = await _productService.GetProductByIdAsync(product.ParentGroupedProductId);
                 if (parentGroupedProduct == null)
                     return RedirectToRoute("Homepage");
 
-                return RedirectToRoutePermanent("Product", new { SeName = _urlRecordService.GetSeName(parentGroupedProduct) });
+                return RedirectToRoutePermanent("Product", new { SeName = await _urlRecordService.GetSeNameAsync(parentGroupedProduct) });
             }
 
             //update existing shopping cart or wishlist  item?
             ShoppingCartItem updatecartitem = null;
             if (_shoppingCartSettings.AllowCartItemEditing && updatecartitemid > 0)
             {
-                var cart = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, storeId: _storeContext.CurrentStore.Id);
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+                var currentStore = await _storeContext.GetCurrentStoreAsync();
+                var cart = await _shoppingCartService.GetShoppingCartAsync(currentCustomer, storeId: currentStore.Id);
                 updatecartitem = cart.FirstOrDefault(x => x.Id == updatecartitemid);
                 //not found?
                 if (updatecartitem == null)
                 {
-                    return RedirectToRoute("Product", new { SeName = _urlRecordService.GetSeName(product) });
+                    return RedirectToRoute("Product", new { SeName = await _urlRecordService.GetSeNameAsync(product) });
                 }
                 //is it this product?
                 if (product.Id != updatecartitem.ProductId)
                 {
-                    return RedirectToRoute("Product", new { SeName = _urlRecordService.GetSeName(product) });
+                    return RedirectToRoute("Product", new { SeName = await _urlRecordService.GetSeNameAsync(product) });
                 }
             }
 
             //save as recently viewed
-            _recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
+            await _recentlyViewedProductsService.AddProductToRecentlyViewedListAsync(product.Id);
 
             //display "edit" (manage) link
-            if (_permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel) &&
-                _permissionService.Authorize(StandardPermissionProvider.ManageProducts))
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel) &&
+                await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
             {
                 //a vendor should have access only to his products
-                if (_workContext.CurrentVendor == null || _workContext.CurrentVendor.Id == product.VendorId)
+                if (currentVendor == null || currentVendor.Id == product.VendorId)
                 {
                     DisplayEditLink(Url.Action("Edit", "Product", new { id = product.Id, area = AreaNames.Admin }));
                 }
             }
 
             //activity log
-            _customerActivityService.InsertActivity("PublicStore.ViewProduct",
-                string.Format(_localizationService.GetResource("ActivityLog.PublicStore.ViewProduct"), product.Name), product);
+            await _customerActivityService.InsertActivityAsync("PublicStore.ViewProduct",
+                 string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.ViewProduct"), product.Name), product);
 
             //model
-            var model = _productModelFactory.PrepareProductDetailsModel(product, updatecartitem, false);
+            var model = await _productModelFactory.PrepareProductDetailsModelAsync(product, updatecartitem, false);
 
             foreach (var prodAttr in model.ProductAttributes)
             {
                 foreach (var attrVal in prodAttr.Values)
                 {
-                    var attrValFromDb = _productAttributeService.GetProductAttributeValueById(attrVal.Id);
+                    var attrValFromDb = await _productAttributeService.GetProductAttributeValueByIdAsync(attrVal.Id);
                     if (attrValFromDb != null)
                     {
                         if (attrValFromDb.AssociatedProductId > 0)
                         {
-                            var associatedProduct = _productService.GetProductById(attrValFromDb.AssociatedProductId);
+                            var associatedProduct = await _productService.GetProductByIdAsync(attrValFromDb.AssociatedProductId);
                             if (associatedProduct != null)
                             {
                                 attrVal.CustomProperties.Add("DisplayOrder", attrValFromDb.DisplayOrder);
                                 attrVal.CustomProperties.Add("AssociatedProduct", associatedProduct);
 
-                                var attrProdModel = _productModelFactory.PrepareProductDetailsModel(associatedProduct, updatecartitem, false);
+                                var attrProdModel = await _productModelFactory.PrepareProductDetailsModelAsync(associatedProduct, updatecartitem, false);
                                 attrVal.CustomProperties.Add("AssociatedProductModel", attrProdModel);
 
-                                var attrProductUrl = Url.RouteUrl("Product", new { SeName = _urlRecordService.GetSeName(associatedProduct) }, _webHelper.CurrentRequestProtocol);
+                                var attrProductUrl = Url.RouteUrl("Product", new { SeName = await _urlRecordService.GetSeNameAsync(associatedProduct) }, _webHelper.GetCurrentRequestProtocol());
                                 attrVal.CustomProperties.Add("AssociatedProductUrl", attrProductUrl);
 
-                                var productCategories = _categoryService.GetProductCategoriesByProductId(associatedProduct.Id);
+                                var productCategories = await _categoryService.GetProductCategoriesByProductIdAsync(associatedProduct.Id);
                                 foreach (var cat in productCategories)
                                 {
                                     var productCategory = cat; //productCategories.FirstOrDefault();
                                     if (productCategory != null)
                                     {
-                                        var category = _categoryService.GetCategoryById(productCategory.CategoryId);
+                                        var category = await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId);
                                         if (!attrVal.CustomProperties.ContainsKey("Category"))
                                             attrVal.CustomProperties.Add("Category", category);
                                     }
@@ -244,9 +248,9 @@ namespace Nop.EPP.AlbumPrint.Controllers
         //currently we use this method on the product details pages
         [HttpPost]
         [IgnoreAntiforgeryToken]
-        public virtual IActionResult AddAlbumProductToCart_Details(int productId, int shoppingCartTypeId, IFormCollection form)
+        public virtual async Task<IActionResult> AddAlbumProductToCart_Details(int productId, int shoppingCartTypeId, IFormCollection form)
         {
-            var product = _productService.GetProductById(productId);
+            var product = await _productService.GetProductByIdAsync(productId);
             if (product == null)
             {
                 return Json(new
@@ -280,8 +284,10 @@ namespace Nop.EPP.AlbumPrint.Controllers
             ShoppingCartItem updatecartitem = null;
             if (_shoppingCartSettings.AllowCartItemEditing && updatecartitemid > 0)
             {
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+                var currentStore = await _storeContext.GetCurrentStoreAsync();
                 //search with the same cart type as specified
-                var cart = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, (ShoppingCartType)shoppingCartTypeId, _storeContext.CurrentStore.Id);
+                var cart = await _shoppingCartService.GetShoppingCartAsync(currentCustomer, (ShoppingCartType)shoppingCartTypeId, currentStore.Id);
 
                 updatecartitem = cart.FirstOrDefault(x => x.Id == updatecartitemid);
                 //not found? let's ignore it. in this case we'll add a new item
@@ -307,13 +313,13 @@ namespace Nop.EPP.AlbumPrint.Controllers
             var addToCartWarnings = new List<string>();
 
             //customer entered price
-            var customerEnteredPriceConverted = _productAttributeParser.ParseCustomerEnteredPrice(product, form);
+            var customerEnteredPriceConverted = await _productAttributeParser.ParseCustomerEnteredPriceAsync(product, form);
 
             //entered quantity
             var quantity = _productAttributeParser.ParseEnteredQuantity(product, form);
 
             //product and gift card attributes
-            var attributes = _productAttributeParser.ParseProductAttributes(product, form, addToCartWarnings);
+            var attributes = await _productAttributeParser.ParseProductAttributesAsync(product, form, addToCartWarnings);
 
             //rental attributes
             _productAttributeParser.ParseRentalDates(product, form, out var rentalStartDate, out var rentalEndDate);
@@ -322,10 +328,10 @@ namespace Nop.EPP.AlbumPrint.Controllers
                 //if the item to update is found, then we ignore the specified "shoppingCartTypeId" parameter
                 updatecartitem.ShoppingCartType;
 
-            SaveItem(updatecartitem, addToCartWarnings, product, cartType, attributes, customerEnteredPriceConverted, rentalStartDate, rentalEndDate, quantity);
+            await SaveItem(updatecartitem, addToCartWarnings, product, cartType, attributes, customerEnteredPriceConverted, rentalStartDate, rentalEndDate, quantity);
 
             //return result
-            var shopingCart = GetProductToCartDetails(addToCartWarnings, cartType, product, photoUploadId);
+            var shopingCart = await GetProductToCartDetails(addToCartWarnings, cartType, product, photoUploadId);
             return shopingCart;
         }
 
@@ -338,23 +344,26 @@ namespace Nop.EPP.AlbumPrint.Controllers
 
         #endregion
 
-        protected virtual void SaveItem(ShoppingCartItem updatecartitem, List<string> addToCartWarnings, Product product,
+        protected async virtual Task SaveItem(ShoppingCartItem updatecartitem, List<string> addToCartWarnings, Product product,
            ShoppingCartType cartType, string attributes, decimal customerEnteredPriceConverted, DateTime? rentalStartDate,
            DateTime? rentalEndDate, int quantity)
         {
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            var currentStore = await _storeContext.GetCurrentStoreAsync();
+
             if (updatecartitem == null)
             {
                 //add to the cart
-                addToCartWarnings.AddRange(_shoppingCartService.AddToCart(_workContext.CurrentCustomer,
-                    product, cartType, _storeContext.CurrentStore.Id,
+                addToCartWarnings.AddRange(await _shoppingCartService.AddToCartAsync(customer,
+                    product, cartType, currentStore.Id,
                     attributes, customerEnteredPriceConverted,
                     rentalStartDate, rentalEndDate, quantity, true));
             }
             else
             {
-                var cart = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, updatecartitem.ShoppingCartType, _storeContext.CurrentStore.Id);
+                var cart = await _shoppingCartService.GetShoppingCartAsync(customer, updatecartitem.ShoppingCartType, currentStore.Id);
 
-                var otherCartItemWithSameParameters = _shoppingCartService.FindShoppingCartItemInTheCart(
+                var otherCartItemWithSameParameters = await _shoppingCartService.FindShoppingCartItemInTheCartAsync(
                     cart, updatecartitem.ShoppingCartType, product, attributes, customerEnteredPriceConverted,
                     rentalStartDate, rentalEndDate);
                 if (otherCartItemWithSameParameters != null &&
@@ -364,18 +373,18 @@ namespace Nop.EPP.AlbumPrint.Controllers
                     otherCartItemWithSameParameters = null;
                 }
                 //update existing item
-                addToCartWarnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer,
+                addToCartWarnings.AddRange(await _shoppingCartService.UpdateShoppingCartItemAsync(customer,
                     updatecartitem.Id, attributes, customerEnteredPriceConverted,
                     rentalStartDate, rentalEndDate, quantity + (otherCartItemWithSameParameters?.Quantity ?? 0), true));
                 if (otherCartItemWithSameParameters != null && !addToCartWarnings.Any())
                 {
                     //delete the same shopping cart item (the other one)
-                    _shoppingCartService.DeleteShoppingCartItem(otherCartItemWithSameParameters);
+                    await _shoppingCartService.DeleteShoppingCartItemAsync(otherCartItemWithSameParameters);
                 }
             }
         }
 
-        protected virtual IActionResult GetProductToCartDetails(List<string> addToCartWarnings, ShoppingCartType cartType,
+        protected virtual async Task<IActionResult> GetProductToCartDetails(List<string> addToCartWarnings, ShoppingCartType cartType,
            Product product, string cloudFolderId)
         {
             if (addToCartWarnings.Any())
@@ -395,8 +404,8 @@ namespace Nop.EPP.AlbumPrint.Controllers
                 case ShoppingCartType.Wishlist:
                     {
                         //activity log
-                        _customerActivityService.InsertActivity("PublicStore.AddToWishlist",
-                            string.Format(_localizationService.GetResource("ActivityLog.PublicStore.AddToWishlist"), product.Name), product);
+                        await _customerActivityService.InsertActivityAsync("PublicStore.AddToWishlist",
+                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToWishlist"), product.Name), product);
 
                         if (_shoppingCartSettings.DisplayWishlistAfterAddingProduct)
                         {
@@ -407,18 +416,21 @@ namespace Nop.EPP.AlbumPrint.Controllers
                             });
                         }
 
+                        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+                        var currentStore = await _storeContext.GetCurrentStoreAsync();
                         //display notification message and update appropriate blocks
-                        var shoppingCarts = _shoppingCartService.GetShoppingCart(_workContext.CurrentCustomer, ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+                        var shoppingCarts = (await _shoppingCartService.GetShoppingCartAsync(currentCustomer, ShoppingCartType.Wishlist, (await _storeContext.GetCurrentStoreAsync()).Id)).FirstOrDefault();
+                        //var shoppingCarts = (await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, (await _storeContext.GetCurrentStoreAsync()).Id));
 
-                        var updatetopwishlistsectionhtml = string.Format(
-                            _localizationService.GetResource("Wishlist.HeaderQuantity"),
-                            shoppingCarts.Sum(item => item.Quantity));
+                        //var headerQuantity = await _localizationService.GetResourceAsync("Wishlist.HeaderQuantity");
+                        var headerQuantity = await _localizationService.GetLocalizedAsync("Wishlist.HeaderQuantity");
+                        var updatetopwishlistsectionhtml = string.Format(headerQuantity, shoppingCarts.Sum(item => item.Quantity));
 
                         return Json(new
                         {
                             success = true,
                             message = string.Format(
-                                _localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist.Link"),
+                                await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheWishlist.Link"),
                                 Url.RouteUrl("Wishlist")),
                             updatetopwishlistsectionhtml
                         });

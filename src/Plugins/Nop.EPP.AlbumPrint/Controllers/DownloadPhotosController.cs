@@ -122,8 +122,8 @@ namespace Nop.EPP.AlbumPrint.Controllers
             //if current user is vendor then
             var record = _eppApRepository.Table.Where(m => m.CloudFolderId == id).FirstOrDefault();
 
-            var customer = _customerService.GetCustomerById(record.CustomerId);
-            var product = _productService.GetProductById(record.ProductId);
+            var customer = await _customerService.GetCustomerByIdAsync(record.CustomerId);
+            var product = await _productService.GetProductByIdAsync(record.ProductId);
 
             DownloadFromS3 downloadFromS3 = new DownloadFromS3();
             var zipFilePath = await downloadFromS3.Download($"AlbumPrints/{record.CloudFolderId}", $"{product.Name}.zip");

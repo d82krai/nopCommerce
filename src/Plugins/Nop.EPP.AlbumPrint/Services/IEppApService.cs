@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Nop.EPP.AlbumPrint.Domain;
 
 namespace Nop.EPP.AlbumPrint.Services
 {
     public interface IEppApService
     {
-        void Insert(EppAp record);
+        Task Insert(EppAp record);
     }
 
 }

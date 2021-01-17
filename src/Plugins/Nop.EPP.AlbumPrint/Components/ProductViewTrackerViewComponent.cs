@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
 using Nop.EPP.AlbumPrint.Domain;
@@ -36,15 +37,16 @@ namespace Nop.EPP.AlbumPrint.Components
             _categoryService = categoryService;
         }
 
-        public IViewComponentResult Invoke(string widgetZone, object additionalData)
+        public async Task<IViewComponentResult> Invoke(string widgetZone, object additionalData)
         {
             if (additionalData is AddToCartModel model)
             {
                 //var product = _productService.GetProductById(model.ProductId);
-                var prodCatetegories = _categoryService.GetProductCategoriesByProductId(model.ProductId).FirstOrDefault();
-                if (prodCatetegories != null)
+                var prodCatetegories = await _categoryService.GetProductCategoriesByProductIdAsync(model.ProductId);
+                var prodCatetegory = prodCatetegories.FirstOrDefault();
+                if (prodCatetegory != null)
                 {
-                    var category = _categoryService.GetCategoryById(prodCatetegories.CategoryId);
+                    var category = await _categoryService.GetCategoryByIdAsync(prodCatetegory.CategoryId);
                     if (category.Name.ToLower().Contains("album print"))
                         return View("~/Plugins/EPP.AlbumPrint/Views/PublicInfo.cshtml", model);
                 }

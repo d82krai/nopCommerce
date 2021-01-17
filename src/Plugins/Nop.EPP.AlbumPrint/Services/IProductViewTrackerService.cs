@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Nop.EPP.AlbumPrint.Domain;
 
 namespace Nop.EPP.AlbumPrint.Services
@@ -11,7 +12,7 @@ namespace Nop.EPP.AlbumPrint.Services
         /// Logs the specified record.
         /// </summary>
         /// <param name="record">The record.</param>
-        void Log(ProductViewTrackerRecord record);
+        Task Log(ProductViewTrackerRecord record);
     }
 
 }
