@@ -19,6 +19,7 @@ namespace Nop.EPP.AlbumPrint
         /// </summary>
         /// <param name="widgetZone">Name of the widget zone</param>
         /// <returns>View component name</returns>
+        /// 
         public string GetWidgetViewComponentName(string widgetZone)
         {
             return "ProductViewTracker";
